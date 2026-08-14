@@ -5,7 +5,16 @@
 (function () {
   'use strict';
 
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function mq(q) {
+    return window.matchMedia ? window.matchMedia(q).matches : false;
+  }
+
+  var reduce = mq('(prefers-reduced-motion: reduce)');
+
+  /* 마우스가 있는 기기에서만 기울기·광택을 켠다.
+     터치에서 pointermove를 받으면 스크롤 제스처가 카드를 기울이고,
+     pointerleave가 안 와서 기울어진 채로 남는다. */
+  var canHover = mq('(hover: hover) and (pointer: fine)');
 
   /* ── 등급 데이터 ────────────────────────────────
      정의는 전부 "또 갈 건가"라는 한 질문의 정도 차이다.  */
@@ -101,13 +110,22 @@
       if (glare) glare.style.setProperty('--on', '0');
     }
 
-    scene.addEventListener('pointerenter', function () { on(); spin(); });
-    scene.addEventListener('pointermove', move);
-    scene.addEventListener('pointerleave', off);
-    scene.addEventListener('click', spin);        /* 터치 — 탭하면 돈다 */
+    if (canHover) {
+      scene.addEventListener('pointerenter', function () { on(); spin(); });
+      scene.addEventListener('pointermove', move);
+      scene.addEventListener('pointerleave', off);
+      scene.addEventListener('pointercancel', off);
+    }
+
+    /* 터치는 탭으로만 돈다. 기울기 없음 — 스크롤과 싸우지 않게 */
+    scene.addEventListener('click', spin);
 
     /* 키보드 — 포커스로 돌고, Enter/Space로 다시 돈다 */
-    scene.addEventListener('focus', function () { on(); point(0.62, 0.38); spin(); });
+    scene.addEventListener('focus', function () {
+      on();
+      if (canHover) point(0.62, 0.38);
+      spin();
+    });
     scene.addEventListener('blur', off);
     scene.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); spin(); }
@@ -194,6 +212,15 @@
 
     var demoScene = document.querySelector('[data-card="demo"]');
     if (demoScene) bind(demoScene);
+  }
+
+  /* ── 시작하기 — 웹 서비스 본체는 아직 없다 ── */
+  var startBtn = document.getElementById('startBtn');
+  var startNote = document.getElementById('startNote');
+  if (startBtn && startNote) {
+    startBtn.addEventListener('click', function () {
+      startNote.textContent = '웹 서비스는 아직 준비 중입니다. 지금은 이 소개 페이지만 있습니다.';
+    });
   }
 
   /* ── 정원 카운터 ── */

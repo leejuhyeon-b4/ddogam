@@ -68,7 +68,13 @@ section{padding:var(--xl) 0}
 :focus-visible{outline:2px solid var(--bronze);outline-offset:3px}
 
 /* ── 헤더 ── */
-header{position:sticky;top:0;z-index:30;background:rgba(218,213,204,.9);backdrop-filter:blur(8px);border-bottom:1px solid rgba(42,39,36,.08)}
+header{position:sticky;top:0;z-index:30;background:rgba(218,213,204,.9);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  border-bottom:1px solid rgba(42,39,36,.08)}
+/* backdrop-filter 미지원 시 반투명 배경만 남아 글자가 읽히지 않는다 */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  header{background:var(--limestone)}
+}
 .bar{max-width:var(--maxw);margin:0 auto;padding:var(--sm) var(--lg);display:flex;align-items:center;justify-content:space-between;gap:var(--md)}
 .brand{font-size:16px;font-weight:800;letter-spacing:-.02em}
 .brand em{font-style:normal;color:var(--ash);font-weight:500;margin-left:var(--sm);font-size:12px;letter-spacing:0}
@@ -135,11 +141,20 @@ header{position:sticky;top:0;z-index:30;background:rgba(218,213,204,.9);backdrop
   --hair:rgba(42,39,36,.14);
 }
 
-.scene{perspective:1200px;perspective-origin:50% 50%;border-radius:8px}
+.scene{
+  perspective:1200px;perspective-origin:50% 50%;border-radius:8px;
+  touch-action:manipulation;      /* 카드 위에서도 스크롤이 막히지 않게 */
+  max-width:100%;
+}
 .scene:focus{outline:none}
 .scene:focus-visible{outline:2px solid var(--bronze);outline-offset:6px}
-.tilt{transform-style:preserve-3d;transition:transform 420ms cubic-bezier(.2,.7,.2,1);will-change:transform}
+.tilt{transform-style:preserve-3d;transition:transform 420ms cubic-bezier(.2,.7,.2,1)}
 .flip{position:relative;transform-style:preserve-3d;aspect-ratio:3/4}
+
+/* aspect-ratio 미지원 브라우저에서 카드 높이가 0이 되는 것을 막는다 */
+@supports not (aspect-ratio:3/4){
+  .flip{height:0;padding-bottom:133.333%}
+}
 
 .face{
   position:absolute;inset:0;border-radius:6px;
@@ -220,7 +235,7 @@ header{position:sticky;top:0;z-index:30;background:rgba(218,213,204,.9);backdrop
 .ladder-grid{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:var(--xl);align-items:start;margin-top:var(--lg)}
 .ladder{list-style:none;margin:0;padding:0;counter-reset:none}
 .ladder li{
-  display:grid;grid-template-columns:88px 1fr;gap:var(--md);align-items:baseline;
+  display:grid;grid-template-columns:88px minmax(0,1fr);gap:var(--md);align-items:baseline;
   padding:var(--md) 0;border-bottom:1px solid rgba(42,39,36,.12);
 }
 .ladder li:first-child{border-top:1px solid rgba(42,39,36,.12)}
@@ -229,14 +244,14 @@ header{position:sticky;top:0;z-index:30;background:rgba(218,213,204,.9);backdrop
 .ld{font-size:15px;color:var(--ash)}
 .ld b{color:var(--ink);font-weight:600}
 
-.rack{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--lg);margin-top:var(--lg)}
+.rack{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--lg);margin-top:var(--lg)}
 .slot{display:flex;flex-direction:column;gap:var(--sm)}
 .slot .cap{font-size:12px;color:var(--ash);text-align:center}
 .hint{font-size:12px;color:var(--ash);margin-top:var(--md);display:flex;align-items:center;gap:6px}
 .hint svg{flex:none}
 
 /* ── 등급 전환 데모 ── */
-.demo{display:grid;grid-template-columns:240px 1fr;gap:var(--xl);align-items:center;margin-top:var(--lg)}
+.demo{display:grid;grid-template-columns:240px minmax(0,1fr);gap:var(--xl);align-items:center;margin-top:var(--lg)}
 .stack{padding:0;--polish:.35}
 .stack .layer{
   position:absolute;inset:0;border-radius:6px;overflow:hidden;padding:7px;
@@ -277,7 +292,7 @@ td:last-child,th:last-child{text-align:right}
 .counter .def{display:block;color:var(--ash);font-size:14px;margin-top:var(--xs)}
 
 /* ── 기록 / 공유 / 원칙 ── */
-.two{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--xl);margin-top:var(--lg)}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--xl);margin-top:var(--lg)}
 .fab{width:56px;height:56px;border-radius:50%;background:var(--brass);display:grid;place-items:center;
   box-shadow:0 3px 8px rgba(42,39,36,.2)}
 .fab-row{display:flex;align-items:center;gap:var(--md);margin-top:var(--lg)}
@@ -285,7 +300,7 @@ td:last-child,th:last-child{text-align:right}
   border:1px solid rgba(42,39,36,.1);display:grid;place-items:center;padding:var(--lg);position:relative;margin-top:var(--lg)}
 .share .scene{width:60%}
 .share .mark{position:absolute;right:var(--md);bottom:var(--sm);font-size:11px;color:var(--ash)}
-.principles{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--lg);margin-top:var(--lg)}
+.principles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--lg);margin-top:var(--lg)}
 .principles h3{margin-bottom:var(--xs)}
 .principles p{font-size:14px;color:var(--ash)}
 
@@ -294,7 +309,7 @@ td:last-child,th:last-child{text-align:right}
    ═══════════════════════════════════════════════ */
 .preview{display:grid;grid-template-columns:280px minmax(0,1fr);gap:var(--xl);align-items:center;margin-top:var(--lg)}
 .phone{
-  width:280px;aspect-ratio:9/18.5;padding:9px;
+  width:min(280px,100%);aspect-ratio:9/18.5;padding:9px;
   border-radius:30px;border:1px solid rgba(42,39,36,.22);
   background:#CFC9C0;
   box-shadow:0 22px 44px rgba(42,39,36,.24),inset 0 0 0 1px rgba(255,255,255,.45);
@@ -315,7 +330,7 @@ td:last-child,th:last-child{text-align:right}
 .tile.wide{grid-column:1 / -1}
 .screen .fab{position:absolute;right:var(--md);bottom:var(--md);width:48px;height:48px}
 .stage{list-style:none;margin:var(--md) 0 0;padding:0}
-.stage li{display:grid;grid-template-columns:64px 1fr;gap:var(--md);padding:10px 0;border-bottom:1px solid rgba(42,39,36,.12);font-size:14px}
+.stage li{display:grid;grid-template-columns:64px minmax(0,1fr);gap:var(--md);padding:10px 0;border-bottom:1px solid rgba(42,39,36,.12);font-size:14px}
 .stage li:first-child{border-top:1px solid rgba(42,39,36,.12)}
 .stage b{font-weight:600}
 .stage span{color:var(--ash)}
@@ -338,27 +353,72 @@ td:last-child,th:last-child{text-align:right}
 footer{border-top:1px solid rgba(42,39,36,.12);padding:var(--lg) 0 var(--xl);font-size:12px;color:var(--ash)}
 footer .wrap{display:flex;flex-wrap:wrap;gap:var(--md);justify-content:space-between}
 
-/* ── 반응형 ── */
-@media (max-width:960px){
-  .hero-grid{grid-template-columns:1fr;gap:var(--lg)}
-  .hero-grid .scene{width:200px}
-  .ladder-grid{grid-template-columns:1fr;gap:var(--lg)}
-  .rack{grid-template-columns:repeat(2,1fr);gap:var(--lg)}
-  .demo{grid-template-columns:1fr;gap:var(--lg)}
-  .demo .scene{width:220px}
-  .quota,.two,.preview{grid-template-columns:1fr;gap:var(--lg)}
-  .principles{grid-template-columns:1fr}
-  h2{font-size:26px}
+/* ═══════════════════════════════════════════════
+   반응형 — 데스크탑(≥1024) / 태블릿(768~1023) / 모바일(≤767)
+   ═══════════════════════════════════════════════ */
+
+/* ── 태블릿 ──
+   2단 구성은 유지하고 카드만 키운다. 4열이면 카드가 160px까지
+   좁아져 스탯 바가 읽히지 않는다. */
+@media (max-width:1023px){
+  .rack{grid-template-columns:repeat(2,1fr)}
+  .hero-grid{grid-template-columns:minmax(0,1fr) 210px}
+  .preview{grid-template-columns:240px minmax(0,1fr);gap:var(--lg)}
+  .demo{grid-template-columns:200px minmax(0,1fr);gap:var(--lg)}
+  .quota,.two,.ladder-grid{gap:var(--lg)}
+  h2{font-size:28px}
 }
-@media (max-width:480px){
+
+/* ── 모바일 ── */
+@media (max-width:767px){
+  :root{--lg:16px}                    /* 화면 좌우 여백을 줄여 카드 폭을 번다 */
+  .hero{padding:var(--xl) 0 var(--lg)}
+  .hero-grid{grid-template-columns:1fr;gap:var(--lg);justify-items:start}
+  .hero-grid .scene{width:200px}
+  .ladder-grid,.demo,.quota,.two,.preview,.principles{grid-template-columns:1fr}
+  .demo .scene,.preview .phone{width:min(220px,100%)}
   .rack{gap:var(--md)}
-  .hero-num{font-size:56px}
-  .counter .cap-n{font-size:28px}
+  h2{font-size:24px}
+  .hero-meta{gap:var(--md)}
+  .share{padding:var(--md)}
+  .share .scene{width:min(58%,180px)}
+}
+
+/* ── 좁은 폰 (≤400px) ──
+   2열 격자에서 카드 폭이 140px 아래로 떨어진다. 활자를 함께 줄이고
+   스탯 바는 두 줄로 쌓아 카드 밖으로 밀리지 않게 한다. */
+@media (max-width:400px){
+  .hero-num{font-size:52px}
+  .counter .cap-n{font-size:26px}
   .cname{font-size:12px}
+  .cbadge{font-size:9px}
+  .cdef{font-size:10px;min-height:2.6em}
+  .statbar{flex-direction:column;align-items:flex-start;gap:1px}
   .statbar b{font-size:14px}
-  .cdef{font-size:10px}
-  .ladder li{grid-template-columns:72px 1fr;gap:var(--sm)}
+  .frame{padding:7px}
+  .ladder li{grid-template-columns:1fr;gap:2px;padding:10px 0}
   .ld{font-size:14px}
+  .stage li{grid-template-columns:52px 1fr;gap:var(--sm)}
+  .screen .big{font-size:40px}
+  .btn-brass{width:100%;justify-content:center}
+}
+
+/* ── 큰 화면 ── */
+@media (min-width:1400px){
+  :root{--maxw:1200px}
+}
+
+/* ── 가로 모드 폰 — 세로 공간이 부족할 때 카드가 화면을 다 먹지 않게 ── */
+@media (max-height:520px) and (orientation:landscape){
+  .hero{padding:var(--lg) 0}
+  .hero-grid .scene,.demo .scene{width:160px}
+  .phone{width:min(200px,100%)}
+}
+
+/* 포인터가 없는 기기에서는 hover 전용 연출을 걷어낸다 */
+@media (hover:none){
+  .btn-brass:hover{transform:none}
+  .step:hover{border-color:rgba(42,39,36,.18)}
 }
 
 /* 시스템 모션 줄이기 — DESIGN §7.2 */
