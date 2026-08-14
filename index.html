@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>나또감 — 나 또 감.</title>
+<meta name="description" content="별점은 광고일 수 있어도, 47번 간 건 못 꾸민다. 방문 횟수와 누적 금액으로 증명하는 나만의 맛집 등급.">
+<meta name="theme-color" content="#DAD5CC">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="나또감 — 나 또 감.">
+<meta property="og:description" content="별점은 광고일 수 있어도, 47번 간 건 못 꾸민다. 방문 횟수와 누적 금액으로 증명하는 나만의 맛집 등급.">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23DAD5CC'/%3E%3Crect x='9' y='5.5' width='14' height='21' rx='2' fill='%23FAF8F5' stroke='%236B5327' stroke-width='1.3'/%3E%3Cpath d='M11.2 21.5c1.8-3.2 3.4-1.2 4.6-4.2s2.6-2 5-4.4' stroke='%23BFB7A9' stroke-width='1.1' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <span class="brand">나또감<em>가제</em></span>
+    <span class="label">개인 기록 · 서버 없음</span>
+  </div>
+</header>
+
+<main>
+
+<!-- ── 히어로 ── -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <p class="sec-label">Personal record</p>
+        <h1>나 또 감<span class="dot">.</span></h1>
+        <p class="lede">
+          세 글자면 끝나는 리뷰. 별점은 광고일 수 있어도,
+          <strong>내가 47번 간 건 못 꾸민다.</strong>
+          나또감은 글이 아니라 증거를 쌓는다 — 몇 번 갔는지, 얼마를 썼는지.
+        </p>
+        <div class="hero-meta">
+          <div><span class="metric">47<span class="unit">회</span></span><span class="label">방문</span></div>
+          <div><span class="metric">380<span class="unit">만원</span></span><span class="label">누적 지출</span></div>
+          <div><span class="metric">3<span class="unit">년</span></span><span class="label">기록 기간</span></div>
+        </div>
+      </div>
+      <div class="scene" id="heroCard"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 등급 = "또 감" 축 ── -->
+<section>
+  <div class="wrap">
+    <p class="sec-label">등급</p>
+    <h2>결국 질문은 하나다 — 또 갈 거야?</h2>
+
+    <div class="ladder-grid">
+      <ol class="ladder">
+        <li><span class="lg">인생맛집</span><span class="ld">멀리서 일부러라도 <b>또 감</b></span></li>
+        <li><span class="lg">맛집</span><span class="ld">근처 가면 <b>또 감</b></span></li>
+        <li><span class="lg">무난</span><span class="ld">누가 가자면 <b>또 감</b></span></li>
+        <li><span class="lg">비추</span><span class="ld"><b>안 감</b></span></li>
+      </ol>
+
+      <div>
+        <p class="lede">
+          네 등급은 사실 한 질문의 정도 차이다. "맛있다 / 괜찮다"를 기준으로 삼으면
+          시간이 지나며 전부 상위 등급으로 몰리기 때문에, 취향이 아니라
+          <strong>다음에 할 행동</strong>으로 정의한다.
+        </p>
+        <p class="note">
+          등급은 식당당 하나만 존재한다. 방문 기록에는 등급이 없다 —
+          갈 때마다 점수를 매기게 하면 기록 자체가 부담이 된다.
+        </p>
+      </div>
+    </div>
+
+    <div class="rack" id="rack"></div>
+
+    <p class="hint">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6E675E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M8 13V5a2 2 0 1 1 4 0v6M12 11V4a2 2 0 1 1 4 0v7M16 11v-.5a2 2 0 1 1 4 0V14a7 7 0 0 1-7 7h-1a7 7 0 0 1-7-7v-1a2 2 0 1 1 4 0"/>
+      </svg>
+      카드에 커서를 올리면 한 바퀴 돌아갑니다. 움직이면 기울고, 광택이 따라옵니다.
+    </p>
+  </div>
+</section>
+
+<!-- ── 등급 전환 데모 ── -->
+<section>
+  <div class="wrap">
+    <p class="sec-label">시그니처</p>
+    <h2>등급이 바뀌면 재질이 바뀐다</h2>
+    <p class="lede">
+      재질은 장식이 아니라 상태 그 자체다. 승격은 결이 조밀해지며 카드가 떠오르고,
+      강등은 같은 전환을 되감으며 가라앉는다. 이 앱의 큰 모션은 이것 하나뿐이다.
+    </p>
+
+    <div class="demo">
+      <div class="demo-shadow" id="demoShadow">
+        <div class="scene" data-card="demo">
+          <div class="tilt">
+            <div class="flip">
+              <div class="face front stack" id="demoStack">
+                <div class="layer g-c" data-l="0"></div>
+                <div class="layer g-s" data-l="1" style="opacity:0"></div>
+                <span class="glare" aria-hidden="true"></span>
+              </div>
+              <div class="face back" aria-hidden="true"><span class="seal">나또감</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="steps" role="group" aria-label="등급 선택">
+          <button class="step" type="button" data-g="3" aria-pressed="false">인생맛집 <small>대리석</small></button>
+          <button class="step" type="button" data-g="2" aria-pressed="false">맛집 <small>화강암</small></button>
+          <button class="step" type="button" data-g="1" aria-pressed="false">무난 <small>사암</small></button>
+          <button class="step" type="button" data-g="0" aria-pressed="true">비추 <small>점토</small></button>
+        </div>
+        <p class="note" style="margin-top:var(--md)">
+          승격은 500ms ease-out, 강등은 250ms linear. 강등에는 햅틱도 소리도 없다.
+          승격과 강등의 연출은 대칭이 아니다 — 강등은 축하하지 않는다.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 정원제 ── -->
+<section>
+  <div class="wrap">
+    <p class="sec-label">희소성</p>
+    <h2>인생맛집은 정원제다</h2>
+    <div class="quota">
+      <div>
+        <p class="lede">
+          최고 등급이 무제한이면 대표 숫자를 키우려고 등급을 남발하게 된다.
+          정원이 있으면 열한 번째 후보가 나타났을 때 기존 하나를 내려야 하고,
+          그 순간이 이 앱에서 가장 진지한 의사결정이 된다.
+        </p>
+        <p class="note">
+          정원은 인생맛집에만 적용된다. 맛집·무난·비추는 개수 제한이 없다.
+          전 등급에 분포를 강제하면 기록할 때마다 순위 조정이 따라붙어,
+          기록을 가볍게 유지한다는 원칙과 충돌한다.
+        </p>
+      </div>
+      <div>
+        <button class="counter" id="counter" type="button" aria-label="인생맛집 개수 늘려보기">
+          <span class="label">인생맛집</span>
+          <span class="row"><span class="hero-num" id="cNow">8</span><span class="cap-n"> / 9</span></span>
+          <span class="def">멀리서 일부러라도 또 가는 곳</span>
+        </button>
+        <table style="margin-top:var(--lg)">
+          <thead><tr><th>기록 식당 수</th><th>정원</th></tr></thead>
+          <tbody>
+            <tr><td>1 ~ 4</td><td>1</td></tr>
+            <tr><td>5 ~ 14</td><td>2</td></tr>
+            <tr><td>15 ~ 29</td><td>3</td></tr>
+            <tr><td>30 ~ 49</td><td>4</td></tr>
+            <tr><td>50 이상</td><td>25곳마다 +1</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 기록 ── -->
+<section>
+  <div class="wrap">
+    <p class="sec-label">기록</p>
+    <h2>10초 안에 끝난다</h2>
+    <div class="two">
+      <div>
+        <h3>수동 입력이 정식 경로다</h3>
+        <p class="lede">
+          영수증은 자주 안 받거나 버려진다. 스캔을 주 경로로 두면 영수증 없는 날 기록이 끊긴다.
+          식당·날짜·금액 세 가지만 받고, 날짜는 오늘이 기본값이며 금액은 숫자 키패드가 바로 열린다.
+        </p>
+        <div class="fab-row">
+          <span class="fab" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </span>
+          <span class="label">기록 버튼은 모든 화면 우하단에 고정된다</span>
+        </div>
+      </div>
+      <div>
+        <h3>영수증은 폼을 미리 채울 뿐</h3>
+        <p class="lede">
+          영수증이나 결제 화면을 찍으면 사업자등록번호·상호·일시·금액을 뽑아 기록 폼을 채운다.
+          검토하고 저장하기만 하면 된다. 인식이 실패해도 수동 입력으로 조용히 넘어간다.
+        </p>
+        <p class="note">
+          상호명은 바뀌고 지도 데이터는 흔들리지만 사업자등록번호는 그대로다.
+          그래서 식당의 진짜 고유키는 사업자등록번호다.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 앱 미리보기 ── -->
+<section>
+  <div class="wrap">
+    <p class="sec-label">화면</p>
+    <h2>열면 숫자부터 보인다</h2>
+
+    <div class="preview">
+      <div class="phone" aria-hidden="true">
+        <div class="screen">
+          <span class="label">인생맛집</span>
+          <div><span class="big">8</span><span class="capn"> / 9</span></div>
+          <p class="def">멀리서 일부러라도 또 가는 곳</p>
+
+          <div class="tiles">
+            <div class="tile wide"><b>380<span style="font-size:11px;font-weight:500">만원</span></b><span>누적 지출</span></div>
+            <div class="tile"><b>127<span style="font-size:11px;font-weight:500">회</span></b><span>총 방문</span></div>
+            <div class="tile"><b>34<span style="font-size:11px;font-weight:500">곳</span></b><span>등록 식당</span></div>
+          </div>
+
+          <span class="fab">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </span>
+        </div>
+      </div>
+
+      <div>
+        <p class="lede">
+          대표 숫자를 금액으로 두면 이 앱은 죄책감 앱이 된다.
+          같은 데이터를 인생맛집 개수로 바꾸면 장부가 컬렉션이 된다.
+          정원 대비 표기(<b>8 / 9</b>)가 희소성을 상시 노출한다.
+        </p>
+        <p class="note">
+          갓 시작한 사람에게 0원·0회를 보여주는 것은 통계 앱의 최악의 첫인상이다.
+          그래서 기록 수에 따라 카드를 하나씩 연다.
+        </p>
+        <ol class="stage">
+          <li><b>0건</b><span>큰 기록 버튼과 한 문장 — 세 곳을 기록하면 통계가 열립니다</span></li>
+          <li><b>3건~</b><span>대표 숫자, 누적 금액, 방문 횟수</span></li>
+          <li><b>10건~</b><span>등급 분포, 최다 방문·최다 지출 TOP 5</span></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 공유 ── -->
+<section>
+  <div class="wrap">
+    <p class="sec-label">공유</p>
+    <h2>후기 대신 증거를 보낸다</h2>
+    <div class="two">
+      <div>
+        <p class="lede">
+          추천은 리스트가 아니라 한 곳씩 이뤄진다. 그래서 공유의 기본 단위는 식당 한 곳,
+          이미지 한 장이다. 링크가 아니라 이미지라서 서버가 필요 없고, 메신저에서 더 잘 유통된다.
+        </p>
+        <p class="note">
+          금액은 기본이 구간 표시다. 신뢰 신호는 남기되 소비 수준은 추정하기 어렵게 둔다.
+          한줄 메모와 메뉴 내역은 어떤 경우에도 공유물에 포함되지 않는다.
+        </p>
+      </div>
+      <div class="share">
+        <div class="scene" id="shareCard"></div>
+        <span class="mark">나또감</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 원칙 ── -->
+<section>
+  <div class="wrap">
+    <p class="sec-label">원칙</p>
+    <h2>가볍게, 오래</h2>
+    <div class="principles">
+      <div><h3>서버가 없다</h3><p>모든 기록은 기기 안에만 남는다. 계정도 없고 월 고정비도 0원이다. 대신 백업 파일 내보내기가 유일한 안전장치다.</p></div>
+      <div><h3>대표 숫자는 금액이 아니다</h3><p>얼마 썼는지를 첫 화면에 두면 죄책감 앱이 된다. 같은 데이터를 인생맛집 개수로 바꾸면 장부가 컬렉션이 된다.</p></div>
+      <div><h3>빈 화면은 사과하지 않는다</h3><p>0원·0회를 보여주는 대신 기록 수에 따라 통계를 하나씩 연다. 세 곳을 기록하면 첫 카드가 열린다.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 마무리 ── -->
+<section class="cta">
+  <div class="wrap">
+    <h2>첫 한 곳부터</h2>
+    <p class="lede">
+      지금은 기록할 게 없다. 그게 정상이다.
+      세 곳만 기록하면 통계가 열린다.
+    </p>
+    <a class="btn-brass" href="#">시작하기</a>
+    <p class="sub">설치 없음 · 계정 없음 · 기록은 기기에만 남습니다</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>나또감 — 개인 프로젝트</span>
+    <span>PRD v1.0 · DESIGN v1.0</span>
+  </div>
+</footer>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
