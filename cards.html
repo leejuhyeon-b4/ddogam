@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>카드 — 나또감</title>
+<meta name="description" content="인생맛집·맛집·무난·비추. 등급은 대리석·화강암·사암·점토라는 재질로 남는다.">
+<meta name="theme-color" content="#DAD5CC">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="카드 — 나또감">
+<meta property="og:description" content="인생맛집·맛집·무난·비추. 등급은 대리석·화강암·사암·점토라는 재질로 남는다.">
+<meta property="og:locale" content="ko_KR">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23DAD5CC'/%3E%3Crect x='9' y='5.5' width='14' height='21' rx='2' fill='%23FAF8F5' stroke='%236B5327' stroke-width='1.3'/%3E%3Cpath d='M11.2 21.5c1.8-3.2 3.4-1.2 4.6-4.2s2.6-2 5-4.4' stroke='%23BFB7A9' stroke-width='1.1' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <a class="brand" href="index.html">나또감<em>가제</em></a>
+    <nav class="nav">
+      <a href="cards.html" aria-current="page">카드</a>
+      <a href="how.html">쓰는 법</a>
+      <a href="search.html">검색</a>
+      <a class="nav-cta" href="index.html#start">시작하기</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ── 머리 ── -->
+<section class="page-head">
+  <div class="wrap">
+    <p class="sec-label">카드</p>
+    <h1>결국 질문은 하나다 — 또 갈 거야?</h1>
+    <p class="lede">
+      네 등급은 한 질문의 정도 차이다. "맛있다 / 괜찮다"를 기준으로 삼으면
+      시간이 지나며 전부 위로 몰리기 때문에, 취향이 아니라
+      <strong>다음에 할 행동</strong>으로 정의한다.
+    </p>
+  </div>
+</section>
+
+<!-- ── 사다리 + 카드 ── -->
+<section>
+  <div class="wrap">
+    <div class="ladder-grid">
+      <ol class="ladder">
+        <li><span class="lg">인생맛집</span><span class="ld">멀리서 일부러라도 <b>또 감</b></span></li>
+        <li><span class="lg">맛집</span><span class="ld">근처 가면 <b>또 감</b></span></li>
+        <li><span class="lg">무난</span><span class="ld">누가 가자면 <b>또 감</b></span></li>
+        <li><span class="lg">비추</span><span class="ld"><b>안 감</b></span></li>
+      </ol>
+
+      <div>
+        <p class="note">
+          등급은 식당당 하나만 존재한다. 방문 기록에는 등급이 없다 —
+          갈 때마다 점수를 매기게 하면 기록 자체가 부담이 된다.
+        </p>
+        <p class="note" style="margin-top:var(--md)">
+          등급을 바꾼 이력은 남는다. "2년째 인생맛집 유지", "작년 맛집→무난 강등"
+          같은 서사가 여기서 나온다.
+        </p>
+      </div>
+    </div>
+
+    <div class="rack" id="rack"></div>
+
+    <p class="hint">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6E675E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M8 13V5a2 2 0 1 1 4 0v6M12 11V4a2 2 0 1 1 4 0v7M16 11v-.5a2 2 0 1 1 4 0V14a7 7 0 0 1-7 7h-1a7 7 0 0 1-7-7v-1a2 2 0 1 1 4 0"/>
+      </svg>
+      카드를 누르면 한 바퀴 돌아갑니다. 마우스로는 올리기만 해도 돌고, 움직이면 기울며 광택이 따라옵니다.
+    </p>
+  </div>
+</section>
+
+<!-- ── 재질 확대 ── -->
+<section>
+  <div class="wrap">
+    <h2>재질을 가까이서</h2>
+    <p class="lede">
+      질감은 알아채기 직전까지만 있어야 한다. 눈에 띄면 실패다.
+      아래는 그 결을 일부러 크게 잘라 본 것이다.
+    </p>
+    <div class="swatches" id="swatches"></div>
+  </div>
+</section>
+
+<!-- ── 등급 전환 ── -->
+<section>
+  <div class="wrap">
+    <h2>등급이 바뀌면 재질이 바뀐다</h2>
+    <p class="lede">
+      재질은 장식이 아니라 상태 그 자체다. 승격은 결이 조밀해지며 카드가 떠오르고,
+      강등은 같은 전환을 되감으며 가라앉는다. 이 서비스의 큰 모션은 이것 하나뿐이다.
+    </p>
+
+    <div class="demo">
+      <div class="demo-shadow" id="demoShadow">
+        <div class="scene" data-card="demo">
+          <div class="tilt">
+            <div class="flip">
+              <div class="face front stack" id="demoStack">
+                <div class="layer g-c" data-l="0"></div>
+                <div class="layer g-s" data-l="1" style="opacity:0"></div>
+                <span class="glare" aria-hidden="true"></span>
+              </div>
+              <div class="face back" aria-hidden="true"><span class="seal">나또감</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="steps" role="group" aria-label="등급 선택">
+          <button class="step" type="button" data-g="3" aria-pressed="false">인생맛집 <small>대리석</small></button>
+          <button class="step" type="button" data-g="2" aria-pressed="false">맛집 <small>화강암</small></button>
+          <button class="step" type="button" data-g="1" aria-pressed="false">무난 <small>사암</small></button>
+          <button class="step" type="button" data-g="0" aria-pressed="true">비추 <small>점토</small></button>
+        </div>
+        <p class="note" style="margin-top:var(--md)">
+          승격은 500ms, 강등은 250ms. 강등에는 햅틱도 소리도 없다.
+          승격과 강등의 연출은 대칭이 아니다 — 강등은 축하하지 않는다.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 정원제 ── -->
+<section>
+  <div class="wrap">
+    <h2>인생맛집은 정원제다</h2>
+    <div class="quota">
+      <div>
+        <p class="lede">
+          최고 등급이 무제한이면 대표 숫자를 키우려고 등급을 남발하게 된다.
+          정원이 있으면 열한 번째 후보가 나타났을 때 기존 하나를 내려야 하고,
+          그 순간이 이 서비스에서 가장 진지한 의사결정이 된다.
+        </p>
+        <p class="note">
+          정원은 인생맛집에만 적용된다. 맛집·무난·비추는 개수 제한이 없다.
+          전 등급에 분포를 강제하면 기록할 때마다 순위 조정이 따라붙어,
+          기록을 가볍게 유지한다는 원칙과 충돌한다.
+        </p>
+      </div>
+      <div>
+        <button class="counter" id="counter" type="button" aria-label="인생맛집 개수 늘려보기">
+          <span class="label">인생맛집</span>
+          <span class="row"><span class="hero-num" id="cNow">8</span><span class="cap-n"> / 9</span></span>
+          <span class="def">눌러서 늘려보세요 — 정원을 넘으면 숫자가 물듭니다</span>
+        </button>
+        <table style="margin-top:var(--lg)">
+          <thead><tr><th>기록 식당 수</th><th>정원</th></tr></thead>
+          <tbody>
+            <tr><td>1 ~ 4</td><td>1</td></tr>
+            <tr><td>5 ~ 14</td><td>2</td></tr>
+            <tr><td>15 ~ 29</td><td>3</td></tr>
+            <tr><td>30 ~ 49</td><td>4</td></tr>
+            <tr><td>50 이상</td><td>25곳마다 +1</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="next">
+      <a class="back" href="index.html">← 처음으로</a>
+      <a href="how.html">쓰는 법 →</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>나또감 — 개인 프로젝트</span>
+    <span><a href="index.html">처음</a> · <a href="how.html">쓰는 법</a> · <a href="search.html">검색</a></span>
+  </div>
+</footer>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

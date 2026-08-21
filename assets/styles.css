@@ -353,6 +353,71 @@ td:last-child,th:last-child{text-align:right}
 footer{border-top:1px solid rgba(42,39,36,.12);padding:var(--lg) 0 var(--xl);font-size:12px;color:var(--ash)}
 footer .wrap{display:flex;flex-wrap:wrap;gap:var(--md);justify-content:space-between}
 
+/* ── 내비게이션 ── */
+a.brand{text-decoration:none;color:inherit}
+.nav{display:flex;align-items:center;gap:var(--md)}
+.nav a{
+  font-size:14px;font-weight:500;color:var(--ash);text-decoration:none;
+  padding:2px 0;border-bottom:1px solid transparent;white-space:nowrap;
+}
+.nav a:hover{color:var(--ink)}
+.nav a[aria-current="page"]{color:var(--ink);font-weight:600;border-bottom-color:var(--bronze)}
+.nav .nav-cta{color:var(--bronze);font-weight:600}
+
+/* ── 서브페이지 머리 ── */
+.page-head{padding:calc(var(--xl) + 16px) 0 var(--lg)}
+.page-head h1{
+  font-size:clamp(30px,5.2vw,48px);font-weight:800;
+  letter-spacing:-.03em;line-height:1.15;margin:0 0 var(--md);max-width:22ch;
+}
+.page-head .lede{font-size:17px}
+
+/* ── 랜딩 티저 — 제목과 "더 보기"를 한 줄에 ── */
+.teaser{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--md);align-items:baseline}
+.teaser h2{margin-bottom:var(--xs)}
+.more{font-size:14px;font-weight:600;color:var(--bronze);text-decoration:none;white-space:nowrap}
+.more:hover{text-decoration:underline}
+
+/* ── 버튼 줄 ── */
+.actions{display:flex;flex-wrap:wrap;gap:var(--md);align-items:center;margin-top:var(--lg)}
+.btn-ghost{
+  display:inline-flex;align-items:center;justify-content:center;
+  border:1px solid rgba(42,39,36,.28);border-radius:var(--radius);
+  padding:13px 22px;font:inherit;font-size:15px;font-weight:600;
+  color:var(--ink);text-decoration:none;background:none;cursor:pointer;
+}
+.btn-ghost:hover{border-color:var(--ink)}
+
+/* ── 재질 스와치 — 재질만 크게 잘라 보여준다 ── */
+.swatches{display:grid;gap:var(--lg);margin-top:var(--lg)}
+.swatch{
+  display:grid;grid-template-columns:240px minmax(0,1fr);gap:var(--lg);align-items:center;
+  padding-bottom:var(--lg);border-bottom:1px solid rgba(42,39,36,.12);
+}
+.swatch:last-child{border-bottom:none;padding-bottom:0}
+.sw-face{
+  aspect-ratio:16/10;border-radius:var(--radius);
+  background-color:var(--surface);
+  background-image:var(--tex);
+  background-size:var(--tex-art);
+  background-position:center;
+  box-shadow:var(--shadow),inset 0 0 0 1px var(--edge);
+}
+.sw-spec h3{margin:0 0 var(--sm);font-size:19px;letter-spacing:-.02em}
+.sw-spec h3 span{font-size:12px;font-weight:500;color:var(--ash);margin-left:var(--sm);letter-spacing:0}
+.sw-spec dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sm) var(--md);margin:0}
+.sw-spec dt{font-size:11px;letter-spacing:.06em;color:var(--ash);margin-bottom:2px}
+.sw-spec dd{margin:0;font-size:14px;font-weight:500}
+
+/* ── 다음 페이지로 ── */
+.next{
+  display:flex;justify-content:space-between;gap:var(--md);flex-wrap:wrap;
+  border-top:1px solid rgba(42,39,36,.12);padding-top:var(--lg);margin-top:var(--xl);
+}
+.next a{font-size:16px;font-weight:600;color:var(--ink);text-decoration:none;letter-spacing:-.01em}
+.next a:hover{color:var(--bronze)}
+.next .back{color:var(--ash);font-weight:500}
+
 /* ═══════════════════════════════════════════════
    반응형 — 데스크탑(≥1024) / 태블릿(768~1023) / 모바일(≤767)
    ═══════════════════════════════════════════════ */
@@ -366,6 +431,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:var(--md);justify-content:space-bet
   .preview{grid-template-columns:240px minmax(0,1fr);gap:var(--lg)}
   .demo{grid-template-columns:200px minmax(0,1fr);gap:var(--lg)}
   .quota,.two,.ladder-grid{gap:var(--lg)}
+  .swatch{grid-template-columns:200px minmax(0,1fr)}
   h2{font-size:28px}
 }
 
@@ -382,6 +448,12 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:var(--md);justify-content:space-bet
   .hero-meta{gap:var(--md)}
   .share{padding:var(--md)}
   .share .scene{width:min(58%,180px)}
+  .swatch{grid-template-columns:1fr;gap:var(--md)}
+  .sw-face{aspect-ratio:16/7}
+  .teaser{grid-template-columns:1fr;gap:var(--xs)}
+  .actions .btn-brass,.actions .btn-ghost{flex:1 1 auto;justify-content:center}
+  .bar{flex-wrap:wrap;gap:var(--sm) var(--md)}
+  .nav{gap:var(--md)}
 }
 
 /* ── 좁은 폰 (≤400px) ──
@@ -426,3 +498,58 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:var(--md);justify-content:space-bet
   html{scroll-behavior:auto}
   .tilt,.flip,.layer,.demo-shadow,.btn-brass{transition-duration:1ms !important}
 }
+
+/* ═══════════════════════════════════════════════
+   검색 페이지 — 검색 폼 · 결과 목록 · 리뷰 패널
+   ═══════════════════════════════════════════════ */
+
+/* ── 검색 폼 ── */
+.search-form{display:flex;gap:var(--sm);margin-bottom:var(--md)}
+.search-form input{
+  flex:1 1 auto;min-width:0;
+  font:inherit;font-size:15px;color:var(--ink);
+  border:1px solid rgba(42,39,36,.24);border-radius:var(--radius);
+  padding:var(--sm) var(--md);background:#FAF8F5;
+}
+.search-form input:focus-visible{outline:2px solid var(--bronze);outline-offset:2px}
+.search-form input:disabled,.search-form button:disabled{
+  opacity:.5;cursor:not-allowed;
+}
+.search-empty{font-size:14px;color:var(--ash)}
+
+/* ── 결과 목록 ── */
+.result-list{list-style:none;margin:0;padding:0}
+.result-item{
+  display:flex;flex-direction:column;gap:2px;width:100%;
+  text-align:left;font:inherit;color:inherit;background:none;
+  border:none;border-top:1px solid rgba(42,39,36,.12);
+  padding:var(--md) 0;cursor:pointer;
+}
+.result-item:first-child{border-top:none}
+.result-item:hover{background:rgba(42,39,36,.04)}
+.result-item[aria-expanded="true"]{background:rgba(168,135,78,.10)}
+.result-item .rname{font-size:15px;font-weight:600;letter-spacing:-.01em}
+.result-item .raddr{font-size:13px;color:var(--ash)}
+
+/* ── 리뷰 패널 ── */
+.review-panel{
+  margin-top:var(--lg);
+  border:1px solid rgba(42,39,36,.14);border-radius:var(--radius);
+  padding:var(--md) var(--lg);
+}
+.review-panel:focus-visible{outline:2px solid var(--bronze);outline-offset:2px}
+.review-panel .btn-ghost{margin-bottom:var(--md)}
+.review-loading{font-size:14px;color:var(--ash);margin:0}
+.review-error{font-size:14px;color:var(--ink);margin:0}
+.review-head{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--sm);
+  margin-bottom:var(--md);
+}
+.review-head h3{font-size:16px;font-weight:700;margin:0}
+.review-head .label{font-size:12px;color:var(--ash)}
+.review-list{list-style:none;margin:0;padding:0}
+.review-list li{padding:var(--md) 0;border-bottom:1px solid rgba(42,39,36,.12)}
+.review-list li:last-child{border-bottom:none}
+.rv-author{font-size:14px;font-weight:600}
+.rv-time{font-size:12px;color:var(--ash);margin-left:var(--sm)}
+.rv-text{margin-top:var(--xs);font-size:14px;color:var(--ink)}
