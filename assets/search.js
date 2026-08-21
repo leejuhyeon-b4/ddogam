@@ -79,6 +79,22 @@
     try { localStorage.setItem(cacheKey(placeId), JSON.stringify(data)); } catch (e) { /* quota 등 — best effort */ }
   }
 
+  /* ── AI 분석 캐시 (localStorage, 만료 없음 — 무료 사용량 아끼기) ── */
+  function analysisCacheKey(placeId) { return 'naddogam:analysis:' + placeId; }
+
+  function readAnalysisCache(placeId) {
+    try {
+      var raw = localStorage.getItem(analysisCacheKey(placeId));
+      if (!raw) return null;
+      var obj = JSON.parse(raw);
+      return (obj && obj.schemaVersion === 1) ? obj : null;
+    } catch (e) { return null; }
+  }
+
+  function writeAnalysisCache(placeId, data) {
+    try { localStorage.setItem(analysisCacheKey(placeId), JSON.stringify(data)); } catch (e) { /* best effort */ }
+  }
+
   /* ── 구글 리뷰 조회 (/api/google-review 프록시) ── */
   function fetchGoogleReview(place) {
     var url = '/api/google-review?name=' + encodeURIComponent(place.name) +
@@ -98,6 +114,105 @@
         };
       });
     });
+  }
+
+  /* ── AI 리뷰 분석 (/api/analyze-reviews 프록시, 제미나이) ── */
+  function fetchAiAnalysis(reviewData) {
+    return fetch('/api/analyze-reviews', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ placeName: reviewData.placeName, reviews: reviewData.reviews })
+    }).then(function (res) {
+      if (!res.ok) return Promise.reject();
+      return res.json();
+    });
+  }
+
+  function renderAiLoading(container) {
+    container.innerHTML = '<p class="ai-loading">AI가 리뷰를 분석 하는중…</p>';
+  }
+
+  function renderAiError(container, msg) {
+    container.innerHTML = '<p class="ai-error">' + escapeHtml(msg) + '</p>';
+  }
+
+  function drawWordcloud(canvas, keywords) {
+    if (!canvas || !window.WordCloud || !keywords || keywords.length === 0) return;
+
+    var contextByWord = {};
+    keywords.forEach(function (k) { contextByWord[k.word] = k.context; });
+
+    var displayWidth = canvas.clientWidth || 480;
+    canvas.width = displayWidth;
+    canvas.height = 220;
+
+    window.WordCloud(canvas, {
+      list: keywords.map(function (k) { return [k.word, k.score]; }),
+      weightFactor: function (size) { return 6 + size * 5; },
+      color: function (word) {
+        return contextByWord[word] === 'negative' ? '#c0392b' : '#2f8f4e';
+      },
+      backgroundColor: 'transparent',
+      rotateRatio: 0,
+      gridSize: 8,
+      fontFamily: "'Pretendard Variable', sans-serif"
+    });
+  }
+
+  function renderAiResult(container, data) {
+    var c = data.sentimentCounts || { positive: 0, neutral: 0, negative: 0 };
+    var total = (c.positive + c.neutral + c.negative) || 1;
+    var pPct = Math.round(c.positive / total * 100);
+    var neuPct = Math.round(c.neutral / total * 100);
+    var negPct = Math.max(0, 100 - pPct - neuPct);
+
+    var html = '<div class="ai-sentiment">' +
+      '<div class="ai-sentiment-bar">' +
+        '<span class="seg pos" style="flex-grow:' + pPct + '"></span>' +
+        '<span class="seg neu" style="flex-grow:' + neuPct + '"></span>' +
+        '<span class="seg neg" style="flex-grow:' + negPct + '"></span>' +
+      '</div>' +
+      '<div class="ai-sentiment-legend">' +
+        '<span class="leg pos">긍정 ' + c.positive + '</span>' +
+        '<span class="leg neu">보통 ' + c.neutral + '</span>' +
+        '<span class="leg neg">부정 ' + c.negative + '</span>' +
+      '</div>' +
+    '</div>';
+
+    html += '<canvas class="ai-wordcloud" id="aiWordcloud"></canvas>';
+
+    html += '<div class="ai-summary"><p>' + escapeHtml(data.summary || '') + '</p></div>';
+
+    container.innerHTML = html;
+    drawWordcloud(container.querySelector('#aiWordcloud'), data.keywords || []);
+  }
+
+  /* 리뷰가 다 뜨면 자동으로 이어서 분석 시작. 리뷰 0개면 시도조차 하지 않는다. */
+  function maybeRunAiAnalysis(place, reviewData) {
+    if (!reviewData.reviews || reviewData.reviews.length === 0) return;
+
+    var container = document.getElementById('aiAnalysis');
+    if (!container) return;
+
+    var cached = readAnalysisCache(place.id);
+    if (cached) { renderAiResult(container, cached); return; }
+
+    renderAiLoading(container);
+    fetchAiAnalysis(reviewData)
+      .then(function (result) {
+        var toCache = {
+          schemaVersion: 1,
+          cachedAt: Date.now(),
+          sentimentCounts: result.sentimentCounts,
+          keywords: result.keywords,
+          summary: result.summary
+        };
+        writeAnalysisCache(place.id, toCache);
+        renderAiResult(container, toCache);
+      })
+      .catch(function () {
+        renderAiError(container, 'AI 분석에 실패했습니다.');
+      });
   }
 
   /* ── 리뷰 패널 닫기 ── */
@@ -144,6 +259,11 @@
       html += '<a class="more" href="' + data.mapsUri + '" target="_blank" rel="noopener">전체 리뷰 보기 →</a>';
     }
 
+    /* 리뷰가 하나도 없는 가게는 분석 영역 자체를 만들지 않는다 */
+    if (data.reviews && data.reviews.length > 0) {
+      html += '<div class="ai-analysis" id="aiAnalysis"></div>';
+    }
+
     reviewPanel.hidden = false;
     reviewPanel.innerHTML = html;
     reviewPanel.focus();
@@ -152,13 +272,18 @@
   /* ── 리뷰 패널 연결부 ── */
   function openReviewPanel(place) {
     var cached = readReviewCache(place.id);
-    if (cached) { renderReviewPanel(cached); return; }
+    if (cached) {
+      renderReviewPanel(cached);
+      maybeRunAiAnalysis(place, cached);
+      return;
+    }
 
     renderReviewLoading();
     fetchGoogleReview(place)
       .then(function (result) {
         writeReviewCache(place.id, result);
         renderReviewPanel(result);
+        maybeRunAiAnalysis(place, result);
       })
       .catch(function (err) {
         if (err && err.kind === 'no-match') {
