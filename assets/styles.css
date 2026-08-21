@@ -585,4 +585,63 @@ a.brand{text-decoration:none;color:inherit}
   background:#FAF8F5;border-right:1px solid rgba(42,39,36,.14);border-bottom:1px solid rgba(42,39,36,.14);
   transform:rotate(45deg);
 }
+
+/* ═══════════════════════════════════════════════
+   로그인 — 헤더 영역 · 모달
+   ═══════════════════════════════════════════════ */
+
+/* ── 헤더 로그인/사용자 영역 ── */
+.auth-area{display:flex;align-items:center}
+.btn-login{
+  font:inherit;font-size:14px;font-weight:600;color:var(--bronze);
+  background:none;border:none;padding:2px 0;cursor:pointer;
+}
+.btn-login:hover{text-decoration:underline}
+.auth-user{font-size:14px;color:var(--ink);white-space:nowrap}
+.auth-user b{font-weight:700}
+.btn-logout{
+  font:inherit;font-size:13px;color:var(--ash);
+  background:none;border:none;padding:0;margin-left:var(--sm);
+  cursor:pointer;text-decoration:underline;text-underline-offset:2px;
+}
+.btn-logout:hover{color:var(--ink)}
+
+/* ── 로그인/회원가입 모달 ── */
+.auth-overlay{
+  position:fixed;inset:0;z-index:100;
+  background:rgba(42,39,36,.5);
+  display:flex;align-items:center;justify-content:center;
+  padding:var(--lg);
+}
+/* display:flex가 있으면 author 스타일이 UA의 [hidden]{display:none}보다
+   우선해 닫히지 않는다 — hidden일 때는 명시적으로 꺼준다 */
+.auth-overlay[hidden]{display:none}
+.auth-modal{
+  position:relative;width:100%;max-width:360px;
+  background:#FAF8F5;border-radius:8px;
+  box-shadow:0 18px 34px rgba(42,39,36,.24),0 6px 12px rgba(42,39,36,.14);
+  padding:var(--lg);
+}
+.auth-modal h2{font-size:19px;font-weight:800;letter-spacing:-.02em;margin:0 0 var(--md)}
+.auth-close{
+  position:absolute;top:var(--md);right:var(--md);
+  font:inherit;font-size:14px;line-height:1;color:var(--ash);
+  background:none;border:none;padding:4px;cursor:pointer;
+}
+.auth-close:hover{color:var(--ink)}
+.auth-error{
+  font-size:13px;font-weight:600;color:var(--bronze);
+  margin:0 0 var(--md);
+}
+.auth-field{display:block;margin-bottom:var(--md)}
+.auth-field span{display:block;font-size:12px;font-weight:500;letter-spacing:.02em;color:var(--ash);margin-bottom:var(--xs)}
+.auth-field input{
+  width:100%;font:inherit;font-size:15px;color:var(--ink);
+  border:1px solid rgba(42,39,36,.24);border-radius:var(--radius);
+  padding:var(--sm) var(--md);background:#FFFFFF;
+}
+.auth-field input:focus-visible{outline:2px solid var(--bronze);outline-offset:2px}
+.auth-actions{display:flex;gap:var(--sm);margin-top:var(--lg)}
+.auth-actions .btn-brass,.auth-actions .btn-ghost{flex:1 1 0;justify-content:center;padding:12px 16px;font-size:15px}
+.auth-actions button:disabled{opacity:.5;cursor:not-allowed}
 .ai-summary p{margin:0;font-size:14px;line-height:1.55;color:var(--ink)}
