@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>검색 — 나또감</title>
-<meta name="description" content="카카오맵으로 가게를 검색하고 목록에서 골라 구글 리뷰까지 확인하는 나또감 검색 화면.">
+<title>내 카드 — 나또감</title>
+<meta name="description" content="로그인하고 내 맛집 카드를 등급별로 모아보세요.">
 <meta name="theme-color" content="#DAD5CC">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="검색 — 나또감">
-<meta property="og:description" content="카카오맵으로 가게를 검색하고 목록에서 골라 구글 리뷰까지 확인하는 나또감 검색 화면.">
+<meta property="og:title" content="내 카드 — 나또감">
+<meta property="og:description" content="로그인하고 내 맛집 카드를 등급별로 모아보세요.">
 <meta property="og:locale" content="ko_KR">
 
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23DAD5CC'/%3E%3Crect x='9' y='5.5' width='14' height='21' rx='2' fill='%23FAF8F5' stroke='%236B5327' stroke-width='1.3'/%3E%3Cpath d='M11.2 21.5c1.8-3.2 3.4-1.2 4.6-4.2s2.6-2 5-4.4' stroke='%23BFB7A9' stroke-width='1.1' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
@@ -22,8 +22,8 @@
   <div class="bar">
     <a class="brand" href="index.html">나또감<em>가제</em></a>
     <nav class="nav">
-      <a href="cardlist.html">카드</a>
-      <a href="search.html" aria-current="page">검색</a>
+      <a href="cardlist.html" aria-current="page">카드</a>
+      <a href="search.html">검색</a>
       <span class="auth-area" id="authArea"></span>
     </nav>
   </div>
@@ -34,29 +34,16 @@
 <!-- ── 머리 ── -->
 <section class="page-head">
   <div class="wrap">
-    <p class="sec-label">검색</p>
-    <h1>가게를 찾아보세요</h1>
-    <p class="lede">
-      가게 이름을 검색하고, 목록에서 고르면 구글 리뷰를 바로 확인할 수 있습니다.
-    </p>
+    <p class="sec-label">카드</p>
+    <h1>내 카드</h1>
+    <p class="lede">로그인하면 등급별로 모아볼 수 있어요. 맛집 저장 기능은 아직 준비 중입니다.</p>
   </div>
 </section>
 
-<!-- ── 검색 ── -->
+<!-- ── 내 카드 ── -->
 <section>
   <div class="wrap">
-
-    <form id="searchForm" class="search-form">
-      <input type="search" id="searchInput" placeholder="가게 이름으로 검색">
-      <button type="submit" class="btn-brass" id="searchBtn">검색</button>
-    </form>
-
-    <p class="search-empty" id="searchEmpty" hidden></p>
-
-    <ul class="result-list" id="resultList" hidden></ul>
-
-    <div id="reviewPanel" class="review-panel" hidden tabindex="-1"></div>
-
+    <div id="cardlistRoot"></div>
   </div>
 </section>
 
@@ -69,8 +56,7 @@
   </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.3/src/wordcloud2.js"></script>
-<script src="assets/search.js"></script>
 <script type="module" src="assets/auth.js"></script>
+<script type="module" src="assets/cardlist.js"></script>
 </body>
 </html>

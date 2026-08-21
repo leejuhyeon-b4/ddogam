@@ -1,6 +1,5 @@
 /* 나또감 — 랜딩페이지 상호작용
    · 3D 표본 카드: 기울기 · 광택 추적 · 한 바퀴 회전
-   · 등급 전환 데모: 재질 크로스페이드 (DESIGN §7.2)
    · 정원 카운터: 초과 시 경고문 없이 숫자만 물든다 */
 (function () {
   'use strict';
@@ -21,20 +20,13 @@
   var GRADES = [
     { cls:'g-c', name:'비추',     mat:'점토',   def:'안 감',
       place:'신사 파스타',   visits:1,  spend:9,   lift:'0px'  },
-    { cls:'g-b', name:'무난',     mat:'사암',   def:'누가 가자면 또 감',
+    { cls:'g-b', name:'무난',     mat:'사암',   def:'이유가 생기면 감',
       place:'역삼 김치찌개', visits:9,  spend:11,  lift:'-2px' },
     { cls:'g-a', name:'맛집',     mat:'화강암', def:'근처 가면 또 감',
       place:'연남 손칼국수', visits:23, spend:96,  lift:'-5px' },
     { cls:'g-s', name:'인생맛집', mat:'대리석', def:'멀리서 일부러라도 또 감',
       place:'을지로 골뱅이', visits:47, spend:380, lift:'-9px' }
   ];
-
-  var SHADOW = {
-    'g-c':'0 2px 5px rgba(42,39,36,.10)',
-    'g-b':'0 7px 14px rgba(42,39,36,.16),0 2px 5px rgba(42,39,36,.10)',
-    'g-a':'0 12px 24px rgba(42,39,36,.20),0 4px 8px rgba(42,39,36,.12)',
-    'g-s':'0 18px 34px rgba(42,39,36,.24),0 6px 12px rgba(42,39,36,.14)'
-  };
 
   /* ── 카드 마크업 ── */
   function frameHTML(g) {
@@ -132,95 +124,11 @@
     });
   }
 
-  /* ── 히어로 카드 ── */
-  var hero = document.getElementById('heroCard');
-  if (hero) {
-    hero.innerHTML = cardHTML(GRADES[3]);
-    bind(hero);
-  }
-
-  /* ── 등급 표본 진열 ── */
-  var rack = document.getElementById('rack');
-  if (rack) {
-    GRADES.slice().reverse().forEach(function (g) {
-      var slot = document.createElement('div');
-      slot.className = 'slot';
-      slot.innerHTML =
-        '<div class="scene">' + cardHTML(g) + '</div>' +
-        '<span class="cap">' + g.name + ' · ' + g.mat + '</span>';
-      rack.appendChild(slot);
-      bind(slot.querySelector('.scene'));
-    });
-  }
-
   /* ── 공유 카드 ── */
   var share = document.getElementById('shareCard');
   if (share) {
     share.innerHTML = cardHTML(GRADES[3]);
     bind(share);
-  }
-
-  /* ── 등급 전환 데모 ────────────────────────────── */
-  var stack  = document.getElementById('demoStack');
-  var shadow = document.getElementById('demoShadow');
-  if (stack && shadow) {
-    var layers = stack.querySelectorAll('.layer');
-    var steps  = document.querySelectorAll('.step');
-    var cur = 0, front = 0;
-
-    var paintLayer = function (el, g) {
-      el.className = 'layer ' + g.cls;
-      el.innerHTML = frameHTML(g);
-    };
-
-    paintLayer(layers[0], GRADES[0]);
-    layers[1].style.opacity = '0';
-    shadow.style.boxShadow = SHADOW[GRADES[0].cls];
-
-    var setGrade = function (next) {
-      if (next === cur) return;
-      var g = GRADES[next];
-      var demoting = next < cur;
-
-      stack.classList.toggle('demote', demoting);
-      shadow.classList.toggle('demote', demoting);
-
-      var backIdx = front === 0 ? 1 : 0;
-      paintLayer(layers[backIdx], g);
-      layers[backIdx].style.opacity = '1';
-      layers[front].style.opacity = '0';
-      front = backIdx;
-
-      shadow.style.boxShadow = SHADOW[g.cls];
-      shadow.style.transform = 'translateY(' + g.lift + ')';
-
-      for (var j = 0; j < steps.length; j++) {
-        steps[j].setAttribute('aria-pressed', String(Number(steps[j].dataset.g) === next));
-      }
-
-      /* 승격에만 햅틱 1회 — 강등은 축하하지 않는다 (DESIGN §7.2) */
-      if (!demoting && navigator.vibrate) navigator.vibrate(12);
-
-      cur = next;
-    };
-
-    for (var i = 0; i < steps.length; i++) {
-      (function (b) {
-        b.addEventListener('click', function () { setGrade(Number(b.dataset.g)); });
-      })(steps[i]);
-    }
-
-    var demoScene = document.querySelector('[data-card="demo"]');
-    if (demoScene) bind(demoScene);
-  }
-
-  /* ── 시작하기 — 웹 서비스 본체는 아직 없다 ── */
-  var startBtn = document.getElementById('startBtn');
-  var startNote = document.getElementById('startNote');
-  if (startBtn && startNote) {
-    startBtn.addEventListener('click', function () {
-      startNote.textContent = '웹 서비스는 아직 준비 중입니다. 지금은 이 소개 페이지만 있습니다.';
-    });
   }
 
   /* ── 정원 카운터 ── */
