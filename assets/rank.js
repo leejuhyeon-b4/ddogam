@@ -6,9 +6,9 @@
    · 사진이 없으므로 아바타는 무채색 원 위에 식당명 첫 글자를 얹는다.
    · 이제 실데이터(saved_restaurants + visits)라 사용자마다 결과가 다르다.
      그래서 cardlist.html과 마찬가지로 로그인 게이트를 건다.
-   · classic script — assets/utils.js보다 뒤에 로드한다. auth.js(module)는
-     더 늦게 실행되므로 auth.onChange 구독 자체는 즉시 걸어 두고, 실제
-     로그인/비로그인 판단은 그 콜백이 불릴 때(=auth 준비된 뒤) 이뤄진다. */
+   · type="module"이라 auth.js(마찬가지로 module) 다음에 실행된다 — 이
+     시점엔 window.NaToGam.auth가 이미 준비돼 있다. assets/utils.js는
+     classic script라 이보다 먼저 로드돼야 한다. */
 (function () {
   'use strict';
 
@@ -99,11 +99,20 @@
     root.innerHTML = '<p class="note">불러오는 중…</p>';
   }
 
+  /* auth.onChange는 토큰 자동 갱신 때도 같은 사용자로 다시 불린다 —
+     그때마다 다시 불러오면 화면이 매번 "불러오는 중…"으로 리셋된다.
+     실제로 사용자가 바뀐 경우에만 다시 불러온다. */
+  var loadedUserId = null;
+
   function render(user) {
-    if (!user) { renderLoggedOut(); return; }
+    if (!user) { loadedUserId = null; renderLoggedOut(); return; }
+    if (user.id === loadedUserId) return;
     renderLoading();
     utils.fetchMyRestaurants(window.NaToGam.auth.getClient(), user.id)
-      .then(renderRanked)
+      .then(function (data) {
+        loadedUserId = user.id;   // 성공했을 때만 기록 — 실패하면 다음 재알림 때 다시 시도
+        renderRanked(data);
+      })
       .catch(function () {
         root.innerHTML = '<p class="note">불러오지 못했습니다. 새로고침해 주세요.</p>';
       });

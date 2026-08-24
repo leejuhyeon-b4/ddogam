@@ -143,4 +143,18 @@
       counter.classList.toggle('over', n > CAP);
     });
   }
+
+  /* ── 내 카드 구경하기 — 로그인 안 됐으면 이동 대신 로그인 모달을 띄운다.
+     클릭은 사용자 상호작용이라 이 시점엔 auth.js(module)가 이미 실행돼
+     window.NaToGam.auth가 준비돼 있다. */
+  var cardlistCta = document.getElementById('cardlistCta');
+  if (cardlistCta) {
+    cardlistCta.addEventListener('click', function (e) {
+      var auth = window.NaToGam && window.NaToGam.auth;
+      if (auth && !auth.isLoggedIn()) {
+        e.preventDefault();
+        auth.openLoginModal();
+      }
+    });
+  }
 })();

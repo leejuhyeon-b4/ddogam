@@ -14,6 +14,7 @@
   var utils = window.NaToGam.utils;
   var restaurants = [];   // 로그인한 사용자가 담은 가게 + 방문 기록(실데이터)
   var currentUser = null;
+  var loadedUserId = null;   // 마지막으로 실제 데이터를 불러온 사용자 id
 
   /* ── 비로그인 상태 ── */
   function renderLoggedOut() {
@@ -92,6 +93,7 @@
     utils.fetchMyRestaurants(window.NaToGam.auth.getClient(), currentUser.id)
       .then(function (data) {
         restaurants = data;
+        loadedUserId = currentUser.id;
         renderBoard();
       })
       .catch(function () {
@@ -99,9 +101,15 @@
       });
   }
 
+  /* auth.onChange는 로그인/로그아웃뿐 아니라 토큰 자동 갱신 때도 다시
+     불린다(같은 사용자). 그때마다 매번 다시 불러오면 화면이 "불러오는
+     중…"으로 리셋되며 이미 보고 있던 카드/모달이 순간적으로 사라져
+     로딩이 계속되는 것처럼 느껴진다 — 사용자가 실제로 바뀐 경우에만 다시 불러온다. */
   function render(user) {
     currentUser = user;
-    if (user) renderLoggedIn(); else renderLoggedOut();
+    if (!user) { loadedUserId = null; renderLoggedOut(); return; }
+    if (user.id === loadedUserId) return;   // 같은 사용자의 재알림 — 무시
+    renderLoggedIn();
   }
 
   /* 카드 클릭 → 관리 모달 */
