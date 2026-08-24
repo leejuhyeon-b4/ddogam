@@ -16,15 +16,16 @@
   var canHover = mq('(hover: hover) and (pointer: fine)');
 
   /* ── 등급 데이터 ────────────────────────────────
-     정의는 전부 "또 갈 건가"라는 한 질문의 정도 차이다.  */
+     정의는 전부 "또 갈 건가"라는 한 질문의 정도 차이다.
+     pig는 cardlist(§6.2b)와 같은 등급별 캐릭터 에셋을 재사용한다. */
   var GRADES = [
-    { cls:'g-c', name:'비추',     mat:'점토',   def:'안 감',
+    { cls:'g-c', name:'비추',     pig:'pig-c.png', def:'안 감',
       place:'신사 파스타',   visits:1,  spend:9,   lift:'0px'  },
-    { cls:'g-b', name:'무난',     mat:'사암',   def:'이유가 생기면 감',
+    { cls:'g-b', name:'무난',     pig:'pig-b.png', def:'이유가 생기면 감',
       place:'역삼 김치찌개', visits:9,  spend:11,  lift:'-2px' },
-    { cls:'g-a', name:'맛집',     mat:'화강암', def:'근처 가면 또 감',
+    { cls:'g-a', name:'맛집',     pig:'pig-a.png', def:'근처 가면 또 감',
       place:'연남 손칼국수', visits:23, spend:96,  lift:'-5px' },
-    { cls:'g-s', name:'인생맛집', mat:'대리석', def:'멀리서 일부러라도 또 감',
+    { cls:'g-s', name:'인생맛집', pig:'pig-s.png', def:'멀리서 일부러라도 또 감',
       place:'을지로 골뱅이', visits:47, spend:380, lift:'-9px' }
   ];
 
@@ -35,7 +36,7 @@
           '<span class="cname">' + g.place + '</span>' +
           '<span class="cbadge">' + g.name + '</span>' +
         '</div>' +
-        '<div class="art" aria-hidden="true"><span class="mat">' + g.mat + '</span></div>' +
+        '<div class="art" aria-hidden="true"><img src="assets/img/' + g.pig + '" alt=""></div>' +
         '<p class="cdef">' + g.def + '</p>' +
         '<div class="statbar">' +
           '<span class="st"><span class="st-k">방문</span><b>' + g.visits + '</b><i>회</i></span>' +

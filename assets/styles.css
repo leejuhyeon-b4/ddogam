@@ -3,7 +3,7 @@
    토큰: DESIGN.md §2 색 · §4 타이포 · §5.1 간격
    ═══════════════════════════════════════════════ */
 :root{
-  --limestone:#DAD5CC;   /* 석회암 판 — 배경 */
+  --beige:#E8E8E3;       /* 차분한 라이트 그레이 — 배경 (구 베이지 #E7DCC3, 2026-08-24 재개정) */
   --ink:#2A2724;         /* 먹 */
   --ash:#6E675E;         /* 재 */
   --brass:#A8874E;       /* 무광 황동 — 면·아이콘 전용 */
@@ -14,33 +14,11 @@
   --maxw:1120px;
 }
 
-/* ───────────────────────────────────────────────
-   재질 텍스처 — SVG feTurbulence 코드 생성
-   (DESIGN §10 미결정 #2: 코드 생성 vs 이미지 에셋)
-   ─────────────────────────────────────────────── */
-:root{
-  /* 대리석 — 가는 맥 + 넓은 구름 */
-  --m-vein:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='560'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.006 0.028' numOctaves='5' seed='3'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.478 0 0 0 0 0.451 0 0 0 0 0.408 3.4 0 0 0 -2.05'/%3E%3C/filter%3E%3Crect width='400' height='560' filter='url(%23a)'/%3E%3C/svg%3E");
-  --m-cloud:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='560'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.004 0.013' numOctaves='4' seed='9'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.812 0 0 0 0 0.784 0 0 0 0 0.737 1.15 0 0 0 -0.44'/%3E%3C/filter%3E%3Crect width='400' height='560' filter='url(%23b)'/%3E%3C/svg%3E");
-
-  /* 화강암 — 어두운 알갱이 + 밝은 알갱이 + 중간 얼룩 */
-  --g-dark:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.05' numOctaves='1' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.353 0 0 0 0 0.333 0 0 0 0 0.298 5 0 0 0 -3.15'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23c)'/%3E%3C/svg%3E");
-  --g-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='d'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.35' numOctaves='1' seed='21' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 0.996 0 0 0 0 0.984 4.6 0 0 0 -2.95'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23d)'/%3E%3C/svg%3E");
-  --g-blot:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='e'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.055' numOctaves='3' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.706 0 0 0 0 0.682 0 0 0 0 0.643 0.95 0 0 0 -0.38'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23e)'/%3E%3C/svg%3E");
-
-  /* 사암 — 퇴적 띠 + 거친 입자 */
-  --s-band:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.011 0.4' numOctaves='2' seed='5'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.678 0 0 0 0 0.612 0 0 0 0 0.51 1.25 0 0 0 -0.52'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23f)'/%3E%3C/svg%3E");
-  --s-grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='2' seed='15' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.737 0 0 0 0 0.69 0 0 0 0 0.627 1.7 0 0 0 -0.9'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23g)'/%3E%3C/svg%3E");
-
-  /* 점토 — 결 없음. 아주 옅은 얼룩만 */
-  --c-mottle:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='h'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.018' numOctaves='3' seed='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.749 0 0 0 0 0.725 0 0 0 0 0.686 0.65 0 0 0 -0.3'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23h)'/%3E%3C/svg%3E");
-}
-
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
 body{
   margin:0;
-  background:var(--limestone);
+  background:var(--beige);
   color:var(--ink);
   font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,'Malgun Gothic',sans-serif;
   font-size:15px;line-height:1.65;
@@ -54,6 +32,7 @@ body{
 .label{font-size:12px;font-weight:500;letter-spacing:.02em;color:var(--ash)}
 .unit{font-size:.72em;font-weight:500;color:var(--ash);margin-left:2px}
 
+h1,h2{text-wrap:balance}
 h2{font-size:32px;font-weight:800;letter-spacing:-.02em;line-height:1.25;margin:0 0 var(--md)}
 h3{font-size:17px;font-weight:600;letter-spacing:-.01em;margin:0 0 var(--sm)}
 p{margin:0 0 var(--md)}
@@ -73,13 +52,30 @@ section{padding:var(--xl) 0}
 
 :focus-visible{outline:2px solid var(--bronze);outline-offset:3px}
 
+/* ── 건너뛰기 링크 — 스크린리더/키보드 사용자가 매 페이지 헤더 내비게이션을
+   반복해서 지나치지 않고 본문(main)으로 바로 이동한다. 평소엔 화면 밖에
+   숨겨두고, 포커스를 받는 순간(Tab 첫 번째)에만 화면 위로 드러난다. */
+.skip-link{
+  position:absolute;top:-100px;left:var(--md);z-index:200;
+  background:var(--ink);color:#FFFFFF;text-decoration:none;
+  padding:10px 16px;border-radius:var(--radius);font-size:14px;font-weight:600;
+  transition:top 150ms ease-out;
+}
+.skip-link:focus{top:var(--md)}
+
+/* 화면엔 안 보이지만 스크린리더는 읽는 라벨 — placeholder는 label 대체가 아니다 */
+.sr-only{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
+
 /* ── 헤더 ── */
-header{position:sticky;top:0;z-index:30;background:rgba(218,213,204,.9);
+header{position:sticky;top:0;z-index:30;background:rgba(232,232,227,.9);
   -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
   border-bottom:1px solid rgba(42,39,36,.08)}
 /* backdrop-filter 미지원 시 반투명 배경만 남아 글자가 읽히지 않는다 */
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
-  header{background:var(--limestone)}
+  header{background:var(--beige)}
 }
 .bar{max-width:var(--maxw);margin:0 auto;padding:var(--sm) var(--lg);display:flex;align-items:center;justify-content:space-between;gap:var(--md)}
 .brand{font-size:16px;font-weight:800;letter-spacing:-.02em}
@@ -98,53 +94,17 @@ header{position:sticky;top:0;z-index:30;background:rgba(218,213,204,.9);
 .hero .lede strong{color:var(--ink);font-weight:600}
 
 /* ═══════════════════════════════════════════════
-   석재 카드 — 3D 표본 카드
+   등급 팔레트 — 배틀카드. cardlist(§card5)·랭킹 페이지와
+   공유하는 단 하나의 정의다. 재질 텍스처는 쓰지 않는다
+   (2026-08-24 개정, DESIGN.md §0/§2.3).
    ═══════════════════════════════════════════════ */
-.g-s{
-  --surface:#FAF8F5;
-  --tex:var(--m-vein),var(--m-cloud);
-  --tex-size:100% 100%,100% 100%;
-  --tex-art:cover,cover;
-  --edge:#CFC8BC; --edge2:#BFB7A9;
-  --shadow:0 18px 34px rgba(42,39,36,.24),0 6px 12px rgba(42,39,36,.14);
-  --polish:.55;                     /* 광택 — 연마된 대리석이 가장 높다 */
-  --badge:var(--bronze);
-  --hair:rgba(42,39,36,.20);
-}
-.g-a{
-  --surface:#EBE7E0;
-  --tex:var(--g-dark),var(--g-light),var(--g-blot);
-  --tex-size:180px,180px,300px;
-  --tex-art:280px,280px,440px;
-  --edge:#C4BEB3; --edge2:#B4AEA4;
-  --shadow:0 12px 24px rgba(42,39,36,.20),0 4px 8px rgba(42,39,36,.12);
-  --polish:.30;
-  --badge:var(--ash);
-  --hair:rgba(42,39,36,.18);
-}
-.g-b{
-  --surface:#DFD8CA;
-  --tex:var(--s-band),var(--s-grain);
-  --tex-size:100% 100%,160px;
-  --tex-art:cover,240px;
-  --edge:#C8BFAD; --edge2:#BCB0A0;
-  --shadow:0 7px 14px rgba(42,39,36,.16),0 2px 5px rgba(42,39,36,.10);
-  --polish:.14;
-  --badge:var(--ash);
-  --hair:rgba(42,39,36,.16);
-}
-.g-c{
-  --surface:#D3CEC6;
-  --tex:var(--c-mottle);
-  --tex-size:300px;
-  --tex-art:420px;
-  --edge:#C6C0B7; --edge2:#BAB4AA;
-  --shadow:0 2px 5px rgba(42,39,36,.10);   /* 가라앉는다 */
-  --polish:0;
-  --badge:var(--ash);
-  --hair:rgba(42,39,36,.14);
-}
+.g-s{ --frame:#C99A3D; --face1:#FFFCF3; --face2:#F6DFA0; --band:#8B6B1F; --on-band:#FFF6E0; }
+.g-a{ --frame:#5E9E4C; --face1:#F3FBEE; --face2:#C7E8B4; --band:#2F5F27; --on-band:#EAFBE3; }
+.g-b{ --frame:#4B8FC4; --face1:#EFF7FD; --face2:#B9DCF3; --band:#245A83; --on-band:#E7F4FC; }
+.g-c{ --frame:#8A61B0; --face1:#F7F0FA; --face2:#DAC2E8; --band:#4E3170; --on-band:#F3E9F8; }
+.g-u{ --frame:transparent; --face1:#D8D3CA; --face2:#D8D3CA; --band:transparent; --on-band:var(--ash); }
 
+/* ── 3D 쇼케이스 카드 (랜딩 전용) ── */
 .scene{
   perspective:1200px;perspective-origin:50% 50%;border-radius:8px;
   touch-action:manipulation;      /* 카드 위에서도 스크롤이 막히지 않게 */
@@ -161,28 +121,27 @@ header{position:sticky;top:0;z-index:30;background:rgba(218,213,204,.9);
 }
 
 .face{
-  position:absolute;inset:0;border-radius:6px;
+  position:absolute;inset:0;border-radius:10px;
   backface-visibility:hidden;-webkit-backface-visibility:hidden;
   overflow:hidden;
 }
 
-/* 앞면 — 재질이 실제 표면 */
+/* 앞면 */
 .front{
-  background-color:var(--surface);
-  background-image:var(--tex);
-  background-size:var(--tex-size);
-  background-position:center;
-  box-shadow:var(--shadow),inset 0 0 0 1px rgba(255,255,255,.55),inset 0 0 0 2px var(--edge2);
+  position:relative;isolation:isolate;
+  background:linear-gradient(165deg,var(--face1) 0%,var(--face2) 100%);
+  border:3px solid var(--frame);
+  box-shadow:0 18px 34px rgba(42,39,36,.22),0 6px 12px rgba(42,39,36,.12),inset 0 0 0 1px rgba(255,255,255,.6);
   padding:7px;                       /* 카드 테두리 두께 */
 }
 
-/* 뒷면 — 석회암 판에 각인 */
+/* 뒷면 — 베이지 판에 각인 */
 .back{
   transform:rotateY(180deg);
   background:
     repeating-linear-gradient(45deg,rgba(42,39,36,.045) 0 2px,transparent 2px 9px),
-    var(--limestone);
-  box-shadow:var(--shadow),inset 0 0 0 1px rgba(255,255,255,.4),inset 0 0 0 2px rgba(42,39,36,.14);
+    var(--beige);
+  box-shadow:0 18px 34px rgba(42,39,36,.22),0 6px 12px rgba(42,39,36,.12),inset 0 0 0 1px rgba(255,255,255,.4),inset 0 0 0 2px rgba(42,39,36,.14);
   display:grid;place-items:center;
 }
 .back .seal{
@@ -194,45 +153,70 @@ header{position:sticky;top:0;z-index:30;background:rgba(218,213,204,.9);
 }
 
 .frame{
-  position:relative;height:100%;
-  border:1px solid var(--hair);border-radius:3px;padding:9px;
+  position:relative;z-index:1;height:100%;
+  border:1px solid rgba(42,39,36,.16);border-radius:7px;padding:9px;
   display:flex;flex-direction:column;
   background:linear-gradient(rgba(255,255,255,.16),rgba(255,255,255,0) 40%);
 }
-.namebar{display:flex;align-items:baseline;justify-content:space-between;gap:6px;padding-bottom:6px;border-bottom:1px solid var(--hair)}
+.namebar{display:flex;align-items:baseline;justify-content:space-between;gap:6px;padding-bottom:6px;border-bottom:1px solid rgba(42,39,36,.16)}
 .cname{font-size:14px;font-weight:600;letter-spacing:-.01em;line-height:1.25;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.cbadge{font-size:10px;font-weight:600;letter-spacing:.02em;color:var(--badge);white-space:nowrap;flex:none}
+.cbadge{font-size:10px;font-weight:700;letter-spacing:.02em;color:var(--band);white-space:nowrap;flex:none}
 
-/* 표본 창 — 같은 재질을 크게 잘라 넣은 창 */
+/* 그림 창 — 등급별 캐릭터. cardlist(§6.2b)와 같은 에셋을 재사용한다 */
 .art{
-  position:relative;margin:7px 0;flex:1;min-height:0;border-radius:2px;
-  background-color:var(--surface);
-  background-image:var(--tex);
-  background-size:var(--tex-art);
-  background-position:center;
-  box-shadow:inset 0 1px 3px rgba(42,39,36,.28),inset 0 0 0 1px var(--edge),0 1px 0 rgba(255,255,255,.5);
-  display:grid;place-items:end start;padding:6px;
+  position:relative;margin:7px 0;flex:1;min-height:0;border-radius:5px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.35);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.55);
 }
-.mat{font-size:9px;font-weight:600;letter-spacing:.16em;color:var(--ash);
-  background:rgba(255,255,255,.55);padding:1px 4px;border-radius:1px}
+.art img{width:80%;height:80%;object-fit:contain;object-position:center bottom}
 
 .cdef{margin:0 0 6px;font-size:11px;line-height:1.45;color:var(--ash);min-height:2.9em}
 
 /* 스탯 바 — 유희왕 ATK/DEF 자리 */
-.statbar{display:flex;justify-content:space-between;align-items:baseline;gap:6px;padding-top:6px;border-top:1px solid var(--hair)}
+.statbar{display:flex;justify-content:space-between;align-items:baseline;gap:6px;padding-top:6px;border-top:1px solid rgba(42,39,36,.16)}
 .statbar .st{display:flex;align-items:baseline;gap:1px}
 .statbar b{font-size:16px;font-weight:700;letter-spacing:-.01em}
 .statbar i{font-style:normal;font-size:10px;font-weight:500;color:var(--ash)}
 .statbar .st-k{font-size:9px;font-weight:500;letter-spacing:.1em;color:var(--ash);align-self:center;margin-right:2px}
 
-/* 광택 — 커서를 따라오는 반사. 재질의 연마 정도에 따라 세기가 다르다 */
+/* 광택 — 커서를 따라오는 반사 */
 .glare{
-  position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:2;
   background:radial-gradient(circle at var(--gx,50%) var(--gy,50%),
-    rgba(255,255,255,calc(var(--polish,.3) * var(--on,0))) 0%,
+    rgba(255,255,255,calc(.4 * var(--on,0))) 0%,
     rgba(255,255,255,0) 58%);
   mix-blend-mode:soft-light;transition:opacity 300ms;
+}
+
+/* 인생맛집 오로라·홀로 — card5(카드리스트)·front(랜딩 쇼케이스)가 공유하는
+   단 하나의 정의. 크리스탈 글레어(.crystal-glare, 별도 요소)는 카드5 쪽에서만
+   추가로 쓴다 — 랜딩 카드는 이미 상시 회전·기울기로 움직이기 때문이다. */
+.card5.g-s::before,.front.g-s::before{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;border-radius:inherit;
+  background:
+    radial-gradient(ellipse 75% 45% at 25% 15%,#4CFFC466 0%,transparent 62%),
+    radial-gradient(ellipse 65% 40% at 78% 10%,#39D8E058 0%,transparent 60%),
+    radial-gradient(ellipse 70% 50% at 45% 60%,#B487FF52 0%,transparent 65%),
+    radial-gradient(ellipse 60% 34% at 82% 75%,#FF7FD452 0%,transparent 60%);
+  mix-blend-mode:soft-light; opacity:.9;
+  animation:card5-aurora-drift 13s ease-in-out infinite alternate;
+}
+.card5.g-s::after,.front.g-s::after{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;border-radius:inherit;
+  background:repeating-linear-gradient(
+    115deg,
+    #ffffff00 0px,#9fd8ffa0 10px,#b9ffe6a0 22px,#e3c8ffa0 34px,
+    #ffc2e6a0 46px,#fff2b0a0 58px,#ffffff00 74px
+  );
+  background-size:280% 280%;
+  mix-blend-mode:soft-light; opacity:.85;
+  animation:card5-holo-drift 8s ease-in-out infinite;
+}
+@media (prefers-reduced-motion:reduce){
+  .card5.g-s::before,.front.g-s::before,.card5.g-s::after,.front.g-s::after{animation:none}
+  .card5.g-s::after,.front.g-s::after{background-position:35% 40%}
 }
 
 /* ── 등급 사다리 ── */
@@ -286,7 +270,7 @@ td:last-child,th:last-child{text-align:right}
 
 /* ── 기록 / 공유 / 원칙 ── */
 .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--xl);margin-top:var(--lg)}
-.share{width:min(380px,100%);aspect-ratio:1/1;background:var(--limestone);border-radius:var(--radius);
+.share{width:min(380px,100%);aspect-ratio:1/1;background:var(--beige);border-radius:var(--radius);
   border:1px solid rgba(42,39,36,.1);display:grid;place-items:center;padding:var(--lg);position:relative;margin-top:var(--lg)}
 .share .scene{width:60%}
 .share .mark{position:absolute;right:var(--md);bottom:var(--sm);font-size:11px;color:var(--ash)}
@@ -481,7 +465,7 @@ a.brand{text-decoration:none;color:inherit}
   display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--sm);
   margin-bottom:var(--md);
 }
-.review-head h3{font-size:16px;font-weight:700;margin:0}
+.review-head h2{font-size:16px;font-weight:700;margin:0}
 .review-head .label{font-size:12px;color:var(--ash)}
 .review-list{list-style:none;margin:0;padding:0}
 .review-list li{padding:var(--md) 0;border-bottom:1px solid rgba(42,39,36,.12)}
@@ -548,6 +532,7 @@ a.brand{text-decoration:none;color:inherit}
   background:rgba(42,39,36,.5);
   display:flex;align-items:center;justify-content:center;
   padding:var(--lg);
+  overscroll-behavior:contain;
 }
 /* display:flex가 있으면 author 스타일이 UA의 [hidden]{display:none}보다
    우선해 닫히지 않는다 — hidden일 때는 명시적으로 꺼준다 */
@@ -596,6 +581,21 @@ a.brand{text-decoration:none;color:inherit}
 .cardlist-banner p{margin:0;font-size:14px;color:var(--ink)}
 .cardlist-banner .btn-brass{padding:10px 20px;font-size:14px;flex:none}
 
+/* ── 내 카드 검색 — 이름으로 즉시 필터링 ── */
+.cardlist-search{
+  display:flex;align-items:center;gap:var(--sm);margin-top:var(--lg);
+  border:1px solid rgba(42,39,36,.24);border-radius:var(--radius);
+  padding:0 var(--md);background:#FAF8F5;
+}
+.cardlist-search .cs-icon{width:18px;height:18px;flex:none;color:var(--ash)}
+.cardlist-search input{
+  flex:1 1 auto;min-width:0;font:inherit;font-size:15px;color:var(--ink);
+  border:none;background:none;padding:var(--sm) 0;
+}
+.cardlist-search input:focus{outline:none}
+.cardlist-search:focus-within{border-color:var(--bronze);outline:2px solid var(--bronze);outline-offset:1px}
+.cardlist-search input::-webkit-search-cancel-button{cursor:pointer}
+
 /* ═══════════════════════════════════════════════
    카드 도감(판) — ref/board.jpg의 "라벨 붙은 구역 +
    카드 슬롯 윤곽" 구조를 무채색 톤으로 재해석.
@@ -604,7 +604,7 @@ a.brand{text-decoration:none;color:inherit}
    등급은 오직 구역 라벨 글자(인생맛집/맛집/무난/비추)로만 구별된다.
    ═══════════════════════════════════════════════ */
 .board{
-  margin-top:var(--lg);background:var(--limestone);
+  margin-top:var(--lg);background:var(--beige);
   border:1px solid rgba(42,39,36,.14);border-radius:8px;padding:var(--lg);
   box-shadow:inset 0 1px 3px rgba(42,39,36,.12),0 1px 0 rgba(255,255,255,.4);
 }
@@ -615,12 +615,12 @@ a.brand{text-decoration:none;color:inherit}
 }
 .board-zone:last-child{margin-bottom:0}
 .board-zone-label{
-  position:absolute;top:-11px;left:var(--md);background:var(--limestone);
+  position:absolute;top:-11px;left:var(--md);background:var(--beige);
   padding:0 8px;font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--ash);
   margin:0;
 }
 .board-zone-count{
-  position:absolute;top:-11px;right:var(--md);background:var(--limestone);
+  position:absolute;top:-11px;right:var(--md);background:var(--beige);
   padding:0 8px;font-size:11px;color:var(--ash);
 }
 .board-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:var(--md)}
@@ -672,22 +672,24 @@ a.brand{text-decoration:none;color:inherit}
   .card5{height:0;padding-bottom:133.333%}
 }
 
-/* ── 등급 팔레트 — 재질 대신 색으로 등급을 표현한다(§DESIGN 재질 규칙 폐기, 배틀카드 방향으로 변경) ── */
-.card5.g-s{ --frame:#C99A3D; --face1:#FFFCF3; --face2:#F6DFA0; --band:#8B6B1F; --on-band:#FFF6E0; --text:var(--ink); }
-.card5.g-a{ --frame:#5E9E4C; --face1:#F3FBEE; --face2:#C7E8B4; --band:#2F5F27; --on-band:#EAFBE3; --text:var(--ink); }
-.card5.g-b{ --frame:#4B8FC4; --face1:#EFF7FD; --face2:#B9DCF3; --band:#245A83; --on-band:#E7F4FC; --text:var(--ink); }
-.card5.g-c{ --frame:#8A61B0; --face1:#F7F0FA; --face2:#DAC2E8; --band:#4E3170; --on-band:#F3E9F8; --text:var(--ink); }
-.card5.g-u{ --frame:transparent; --face1:#D8D3CA; --face2:#D8D3CA; --band:transparent; --on-band:var(--ash); --text:var(--ink);
-  border:2px dashed rgba(42,39,36,.28);box-shadow:none;background:var(--limestone) }
+/* 등급별 프레임/페이스/배지 색(--frame/--face1/--face2/--band/--on-band)은
+   상단의 공용 팔레트(.g-s/.g-a/.g-b/.g-c/.g-u, 랜딩·랭킹과 공유)에서 그대로
+   물려받는다. 카드5는 본문 글자색(--text)만 추가로 필요하다. */
+.card5.g-s,.card5.g-a,.card5.g-b,.card5.g-c,.card5.g-u{ --text:var(--ink); }
+.card5.g-u{ border:2px dashed rgba(42,39,36,.28);box-shadow:none;background:var(--beige) }
 
 /* 카드 전체를 덮는 투명 버튼(관리 열기) 위에, 우상단 × 버튼(삭제)을 따로
-   쌓는다 — button 안에 button을 넣을 수 없어 형제로 겹쳐서 처리한다. */
+   쌓는다 — button 안에 button을 넣을 수 없어 형제로 겹쳐서 처리한다.
+   card5-open은 아래 c5-name/c5-grade/c5-stats/c5-image(전부 z-index:1, 카드
+   전체를 그리드로 빈틈없이 덮는다)보다 z-index가 높아야 한다 — 같았을 때는
+   DOM에서 나중에 오는 그 span들이 위에 그려져 클릭을 가로채는 바람에
+   카드 대부분(패딩 틈 빼고)에서 관리 모달이 열리지 않았다. */
 .card5-open{
-  position:absolute;inset:0;z-index:1;border-radius:inherit;
+  position:absolute;inset:0;z-index:2;border-radius:inherit;
   background:none;border:none;padding:0;margin:0;cursor:pointer;
 }
 .card5-del{
-  position:absolute;top:4px;right:4px;z-index:2;
+  position:absolute;top:4px;right:4px;z-index:3;
   width:22px;height:22px;border-radius:50%;
   display:grid;place-items:center;padding:0;
   font-size:12px;line-height:1;color:var(--ash);
@@ -726,32 +728,11 @@ a.brand{text-decoration:none;color:inherit}
 
 /* ═══════════════════════════════════════════════
    인생맛집 — 카드 색 자체는 다른 등급과 같은 방식(골드 톤)이고,
-   차이는 오직 이 효과뿐: 오로라 빛깔이 은은히 번지고(soft-light),
-   그 위로 프리즘 시트가 흐르고(soft-light), 크리스탈 결면이
-   주기적으로 반짝인다. 화면당 황동 규칙과 별개의 광물성 강조라
-   브론즈 예산을 소모하지 않는다.
+   차이는 오직 효과뿐이다. 오로라·홀로 레이어 정의는 §100 부근
+   (.card5.g-s::before/::after, .front.g-s::before/::after 공용)에
+   있다. 여기서는 카드5에만 더해지는 크리스탈 글레어만 정의한다.
+   화면당 황동 규칙과 별개의 광물성 강조라 브론즈 예산을 소모하지 않는다.
    ═══════════════════════════════════════════════ */
-.card5.g-s::before{
-  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;border-radius:7px;
-  background:
-    radial-gradient(ellipse 75% 45% at 25% 15%,#4CFFC466 0%,transparent 62%),
-    radial-gradient(ellipse 65% 40% at 78% 10%,#39D8E058 0%,transparent 60%),
-    radial-gradient(ellipse 70% 50% at 45% 60%,#B487FF52 0%,transparent 65%),
-    radial-gradient(ellipse 60% 34% at 82% 75%,#FF7FD452 0%,transparent 60%);
-  mix-blend-mode:soft-light; opacity:.9;
-  animation:card5-aurora-drift 13s ease-in-out infinite alternate;
-}
-.card5.g-s::after{
-  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;border-radius:7px;
-  background:repeating-linear-gradient(
-    115deg,
-    #ffffff00 0px,#9fd8ffa0 10px,#b9ffe6a0 22px,#e3c8ffa0 34px,
-    #ffc2e6a0 46px,#fff2b0a0 58px,#ffffff00 74px
-  );
-  background-size:280% 280%;
-  mix-blend-mode:soft-light; opacity:.85;
-  animation:card5-holo-drift 8s ease-in-out infinite;
-}
 @keyframes card5-aurora-drift{0%{transform:translateY(0) scale(1)}100%{transform:translateY(-5%) scale(1.05)}}
 @keyframes card5-holo-drift{
   0%{background-position:0% 30%}
@@ -777,9 +758,7 @@ a.brand{text-decoration:none;color:inherit}
   100%{background-position:0 0,170% 170%}
 }
 @media (prefers-reduced-motion:reduce){
-  .card5.g-s::before,.card5.g-s::after,.crystal-glare{animation:none}
-  .card5.g-s::after{background-position:35% 40%}
-  .crystal-glare{background-position:0 0,40% 40%}
+  .crystal-glare{animation:none;background-position:0 0,40% 40%}
 }
 
 .zone-s .board-zone-label{color:#8B6B1F}
@@ -789,24 +768,53 @@ a.brand{text-decoration:none;color:inherit}
 
 /* ═══════════════════════════════════════════════
    랭킹 페이지 — ref/rank.jpg의 "포디움 + 순번 리스트" 구조를
-   무채색 톤으로 재해석. 등급별 색·재질 구분은 없다 —
-   등급은 pill 배지의 글자(인생맛집/맛집/무난/비추)로만 표시된다.
+   등급별 배틀카드 팔레트(§card5와 공유)로 재해석 — 프레임·배경이
+   등급색을 따르고, pill 배지도 등급색 플레이트로 바뀐다.
    등수 색은 순위 정보이지 등급 정보가 아니다 — 1위만 크기·상승·
-   브론즈 링으로 구분(이 화면의 유일한 브론즈 강조).
-   사진이 없으므로 아바타는 무채색 원 위에 식당명 첫 글자를 얹는다.
+   브론즈 링으로 구분(이 화면의 유일한 브론즈 강조)은 그대로 유지한다.
+   사진이 없으므로 아바타는 등급색 원 위에 식당명 첫 글자를 얹는다.
    ═══════════════════════════════════════════════ */
 .rank-podium{display:flex;align-items:flex-end;gap:var(--sm);margin-top:var(--lg);margin-bottom:var(--xl)}
+/* 랭킹 카드(포디움) — 등급색은 이제 프레임 테두리와 하단 배지로만 전달하고,
+   면 자체는 다이아몬드처럼 투명하고 빛나는 유리질로 바꾼다(2026-08-24).
+   5겹 배경(뒤→앞): ①바탕 화이트 그라디언트 ②③프리즘 색 번짐(고정, 다이아몬드가
+   빛을 가르는 느낌) ④훑고 지나가는 사선 글레어(주기 이동, background-position만
+   애니메이션) ⑤결정면 잔선(고정). 전부 element 자체의 background라 별도
+   pseudo-element/z-index 조정 없이 항상 자식(글자) 아래에 깔린다.
+   overflow는 hidden으로 두지 않는다 — 배경은 border-radius에 맞춰 자동으로
+   잘리지만, 카드 밖으로 살짝 튀어나온 .rank-no(등수 배지)까지 잘리기 때문. */
 .rank-podium-item{
-  position:relative;flex:1;min-width:0;background:#FAF8F5;border-radius:var(--radius);
-  padding:var(--md);text-align:center;box-shadow:0 4px 10px rgba(42,39,36,.14);
+  position:relative;flex:1;min-width:0;border-radius:10px;
+  border:2px solid var(--frame);
+  padding:var(--md);text-align:center;
+  box-shadow:0 4px 14px rgba(42,39,36,.16),0 0 22px rgba(255,255,255,.45),inset 0 0 0 1px rgba(255,255,255,.75);
+  background:
+    linear-gradient(165deg,rgba(255,255,255,.9) 0%,rgba(255,255,255,.4) 55%,rgba(255,255,255,.65) 100%),
+    radial-gradient(ellipse 65% 48% at 80% 12%,rgba(120,200,255,.55) 0%,transparent 62%),
+    radial-gradient(ellipse 62% 50% at 15% 85%,rgba(200,150,255,.45) 0%,transparent 62%),
+    linear-gradient(70deg,transparent 22%,rgba(255,255,255,1) 46%,transparent 66%),
+    repeating-linear-gradient(115deg,transparent 0 9px,rgba(255,255,255,.9) 9px 10px,transparent 10px 22px);
+  background-size:100% 100%,100% 100%,100% 100%,55% 240%,100% 100%;
+  background-position:0 0,0 0,0 0,-70% -70%,0 0;
+  background-repeat:no-repeat;
+  animation:rank-diamond-sweep 6s ease-in-out infinite;
 }
+@keyframes rank-diamond-sweep{
+  0%,20%{background-position:0 0,0 0,0 0,-70% -70%,0 0}
+  60%,75%{background-position:0 0,0 0,0 0,170% 170%,0 0}
+  100%{background-position:0 0,0 0,0 0,170% 170%,0 0}
+}
+@media (prefers-reduced-motion:reduce){
+  .rank-podium-item{animation:none;background-position:0 0,0 0,0 0,40% 40%,0 0}
+}
+.rank-podium-item.g-u{border-color:rgba(42,39,36,.2);border-style:dashed}
 .rank-podium-item.p1{
   padding-top:calc(var(--md) + 10px);transform:translateY(-14px);
-  box-shadow:0 10px 22px rgba(42,39,36,.20);
+  box-shadow:0 10px 22px rgba(42,39,36,.20),0 0 28px rgba(255,255,255,.55),inset 0 0 0 1px rgba(255,255,255,.75);
 }
 .rank-no{
   position:absolute;top:-8px;left:-8px;width:24px;height:24px;border-radius:50%;
-  background:var(--limestone);display:grid;place-items:center;font-size:12px;font-weight:700;
+  background:var(--beige);display:grid;place-items:center;font-size:12px;font-weight:700;
 }
 .rank-podium-item.p1 .rank-no{border:2px solid var(--bronze);color:var(--bronze)}
 .rank-podium-item.p2 .rank-no,.rank-podium-item.p3 .rank-no{border:2px solid var(--ash);color:var(--ash)}
@@ -814,27 +822,34 @@ a.brand{text-decoration:none;color:inherit}
 .rank-avatar{
   width:64px;height:64px;border-radius:50%;margin:0 auto var(--sm);
   display:grid;place-items:center;font-size:20px;font-weight:700;color:var(--ink);
-  background:rgba(42,39,36,.06);
-  box-shadow:inset 0 0 0 1px rgba(42,39,36,.12);
+  background:rgba(255,255,255,.55);
+  box-shadow:inset 0 0 0 1px rgba(42,39,36,.14);
 }
+/* 사진이 없으므로 등급별 돼지 캐릭터(cardlist·랜딩과 같은 에셋, utils.gradePigImg)를
+   원 안에 얹는다. 미지정 등급은 전용 에셋이 없어 monogram()으로 대체한다(rank.js). */
+.rank-avatar img{width:78%;height:78%;object-fit:contain;object-position:center bottom;display:block}
 .rank-podium-item.p1 .rank-avatar{width:76px;height:76px;font-size:24px}
 
 .rank-name{font-size:15px;font-weight:600;letter-spacing:-.01em;
   display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.rank-visits{display:block;margin-top:2px;font-size:12px;color:var(--ash)}
 .rank-amount{display:block;margin-top:2px;font-size:15px;font-weight:700;letter-spacing:-.01em}
 .rank-pill{
   display:inline-block;margin-top:4px;padding:2px 10px;border-radius:999px;
-  background:rgba(42,39,36,.06);font-size:12px;font-weight:600;color:var(--ash);
+  background:var(--band);font-size:12px;font-weight:700;color:var(--on-band);
 }
+.rank-podium-item.g-u .rank-pill{background:none;color:var(--ash)}
 
 .rank-list{list-style:none;margin:0;padding:0}
 .rank-row{
   display:grid;grid-template-columns:28px 40px minmax(0,1fr) auto;gap:var(--md);align-items:center;
-  padding:var(--sm) 0;border-top:1px solid rgba(42,39,36,.12);
+  padding:var(--sm) var(--sm) var(--sm) 8px;border-top:1px solid rgba(42,39,36,.12);
+  border-left:3px solid var(--frame);border-radius:0 4px 4px 0;
 }
+.rank-row.g-u{border-left-style:dashed}
 .rank-list li:first-child .rank-row{border-top:none}
 .rank-idx{font-size:14px;font-weight:600;color:var(--ash);text-align:center}
-.rank-avatar-sm{width:36px;height:36px;font-size:13px;margin:0}
+.rank-avatar-sm{width:36px;height:36px;font-size:13px;margin:0;background:var(--face2)}
 .rank-row-name{min-width:0}
 .rank-row-name .rank-name{font-size:14px}
 .rank-sub{display:block;font-size:11px;color:var(--ash);margin-top:2px}
@@ -849,6 +864,7 @@ a.brand{text-decoration:none;color:inherit}
   background:rgba(42,39,36,.5);
   display:flex;align-items:center;justify-content:center;
   padding:var(--lg);overflow-y:auto;
+  overscroll-behavior:contain;
 }
 .manage-overlay[hidden]{display:none}
 .manage-modal{

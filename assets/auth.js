@@ -101,7 +101,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
       '<div class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">' +
         '<button type="button" class="auth-close" id="authCloseBtn" aria-label="닫기">✕</button>' +
         '<h2 id="authModalTitle">로그인</h2>' +
-        '<p class="auth-error" id="authError" hidden></p>' +
+        '<p class="auth-error" id="authError" aria-live="polite" hidden></p>' +
         '<form id="authForm" novalidate>' +
           '<label class="auth-field"><span>이메일</span>' +
             '<input type="email" id="authEmail" autocomplete="email"></label>' +
@@ -133,12 +133,17 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
     signupBtn.addEventListener('click', handleSignup);
   }
 
+  /* 데스크탑(마우스 포인터)에서만 이메일 입력에 자동 포커스한다 — 모바일에서
+     모달이 열리자마자 자동으로 포커스를 주면 화면 키보드가 바로 튀어올라와
+     모달 자체를 가려버린다. */
+  var canAutoFocus = window.matchMedia ? window.matchMedia('(hover: hover) and (pointer: fine)').matches : true;
+
   function openModal() {
     if (!modalOverlay) buildModal();
     clearError();
     modalForm.reset();
     modalOverlay.hidden = false;
-    window.setTimeout(function () { modalEmail.focus(); }, 0);
+    if (canAutoFocus) window.setTimeout(function () { modalEmail.focus(); }, 0);
   }
 
   function closeModal() {

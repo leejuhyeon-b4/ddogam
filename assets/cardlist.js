@@ -17,6 +17,28 @@
   var currentUser = null;
   var loadedUserId = null;   // 마지막으로 실제 데이터를 불러온 사용자 id
 
+  /* ── 내 카드 검색 — 이름으로 즉시 필터링. renderContent()가 root.innerHTML을
+     통째로 갈아끼우므로, 검색창이 포커스된 채로 다시 그려질 때는 직접
+     포커스·커서 위치를 복원한다(그러지 않으면 한 글자 칠 때마다 포커스가 풀린다). */
+  var searchQuery = '';
+
+  function searchBarHTML() {
+    return '<div class="cardlist-search">' +
+        '<svg class="cs-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">' +
+          '<circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6"/>' +
+          '<path d="M14 14l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>' +
+        '</svg>' +
+        '<input type="search" id="cardlistSearch" value="' + utils.escapeHtml(searchQuery) + '" ' +
+          'placeholder="담은 맛집 이름 검색" aria-label="내 카드 검색">' +
+      '</div>';
+  }
+
+  function matchesQuery(restaurant) {
+    if (!searchQuery) return true;
+    var name = (restaurant.name || '').toLowerCase();
+    return name.indexOf(searchQuery.trim().toLowerCase()) !== -1;
+  }
+
   /* ── 비로그인 상태 ── */
   function renderLoggedOut() {
     root.innerHTML =
@@ -51,14 +73,6 @@
       '</div>';
   }
 
-  /* 등급별 돼지 캐릭터 — 오른쪽 상단 이미지 칸. 미지정은 그림 없이 빈 칸 */
-  var GRADE_PIG_IMG = {
-    S: 'assets/img/pig-s.png',
-    A: 'assets/img/pig-a.png',
-    B: 'assets/img/pig-b.png',
-    C: 'assets/img/pig-c.png'
-  };
-
   /* ── 카드 한 장 — 5분할. 카드 전체는 관리 모달을 열고,
      우상단 × 버튼만 따로 삭제한다(버튼 안에 버튼을 넣을 수 없어 두 버튼을
      같은 칸에 겹쳐 쌓는다 — .card5-open이 전체를 덮고 .card5-del이 그 위).
@@ -69,14 +83,14 @@
     var visits = utils.visitCount(restaurant);
     var spentMan = Math.round(utils.totalSpent(restaurant) / 10000).toLocaleString('ko-KR');
     var name = utils.escapeHtml(restaurant.name);
-    var pigSrc = GRADE_PIG_IMG[restaurant.grade];
+    var pigSrc = utils.gradePigImg(restaurant.grade);
 
     return '<div class="card5 ' + meta.cls + '" data-id="' + restaurant.id + '">' +
         (restaurant.grade === 'S' ? '<span class="crystal-glare" aria-hidden="true"></span>' : '') +
         '<button type="button" class="card5-open" data-id="' + restaurant.id + '" aria-label="' + name + ' 관리"></button>' +
         '<button type="button" class="card5-del" data-id="' + restaurant.id + '" aria-label="' + name + ' 목록에서 삭제">✕</button>' +
         '<span class="c5-name"><span class="cname">' + name + '</span></span>' +
-        '<span class="c5-image" aria-hidden="true">' + (pigSrc ? '<img src="' + pigSrc + '" alt="">' : '') + '</span>' +
+        '<span class="c5-image" aria-hidden="true">' + (pigSrc ? '<img src="' + pigSrc + '" alt="" loading="lazy">' : '') + '</span>' +
         '<span class="c5-grade"><span class="c5-grade-name">' + meta.name + '</span></span>' +
         '<span class="c5-stats">' +
           '<span class="stat"><span class="st-k">방문</span><span class="st-v">' + visits + '<i>회</i></span></span>' +
@@ -90,16 +104,23 @@
     return '<div class="board-slot-empty"><span>아직 등록한 맛집이 없습니다</span></div>';
   }
 
-  /* ── 등급 구역(S→A→B→C→미지정)으로 나눈 도감판 ── */
+  /* ── 등급 구역(S→A→B→C→미지정)으로 나눈 도감판.
+     검색어가 있으면 이름이 일치하는 곳만 남기고, 매치가 하나도 없는 구역은
+     통째로 숨긴다 — "아직 등록한 맛집이 없습니다"는 진짜 빈 구역에만 쓴다. */
   function boardHTML() {
     var groups = utils.GRADE_ORDER.concat([null]);   // 마지막은 미지정(PRD §4.1 순서)
     var html = '<div class="board">';
+    var anyVisible = false;
 
     groups.forEach(function (code) {
       var meta = utils.gradeMeta(code);
       var group = restaurants.filter(function (r) {
-        return code === null ? (r.grade == null) : r.grade === code;
+        var gradeMatch = code === null ? (r.grade == null) : r.grade === code;
+        return gradeMatch && matchesQuery(r);
       });
+
+      if (searchQuery && group.length === 0) return;   // 검색 중엔 매치 없는 구역은 건너뛴다
+      anyVisible = true;
 
       group.sort(function (a, b) {
         var vc = utils.visitCount(b) - utils.visitCount(a);
@@ -123,21 +144,39 @@
     });
 
     html += '</div>';
+
+    if (searchQuery && !anyVisible) {
+      return '<p class="note">"' + utils.escapeHtml(searchQuery) + '"과 일치하는 맛집이 없습니다.</p>';
+    }
     return html;
   }
 
-  /* ── 로그인 상태 화면 전체 조립 — 빈 상태 / 미지정 배너 / 도감판 ── */
+  /* ── 로그인 상태 화면 전체 조립 — 빈 상태 / 검색창 / 미지정 배너 / 도감판 ── */
   function renderContent() {
     if (restaurants.length === 0) {
       root.innerHTML = emptyStateHTML();
       return;
     }
 
-    var html = '';
-    var firstUnassigned = restaurants.filter(function (r) { return r.grade == null; })[0];
-    if (firstUnassigned) html += unassignedBannerHTML(firstUnassigned);
+    var prevSearch = document.getElementById('cardlistSearch');
+    var searchHadFocus = !!prevSearch && document.activeElement === prevSearch;
+    var searchCaret = searchHadFocus ? prevSearch.selectionStart : 0;
+
+    var html = searchBarHTML();
+    if (!searchQuery) {
+      var firstUnassigned = restaurants.filter(function (r) { return r.grade == null; })[0];
+      if (firstUnassigned) html += unassignedBannerHTML(firstUnassigned);
+    }
     html += boardHTML();
     root.innerHTML = html;
+
+    if (searchHadFocus) {
+      var nextSearch = document.getElementById('cardlistSearch');
+      if (nextSearch) {
+        nextSearch.focus();
+        try { nextSearch.setSelectionRange(searchCaret, searchCaret); } catch (e) { /* 일부 브라우저는 search 타입에서 미지원 */ }
+      }
+    }
   }
 
   var loadingUserId = null;   // 지금 요청이 진행 중인 사용자 id (중복 요청 방지)
@@ -186,6 +225,14 @@
 
     var bannerBtn = e.target.closest ? e.target.closest('#cardlistUnassignedBtn') : null;
     if (bannerBtn) { openManageModal(bannerBtn.dataset.id); return; }
+  });
+
+  /* 검색창 입력 위임 — renderContent()가 포커스·커서 위치 복원까지 처리한다 */
+  root.addEventListener('input', function (e) {
+    var input = e.target.closest ? e.target.closest('#cardlistSearch') : null;
+    if (!input) return;
+    searchQuery = input.value;
+    renderContent();
   });
 
   function deleteRestaurant(id) {
@@ -302,7 +349,7 @@
         var perVisit = utils.formatWonExact(utils.splitAmount(v));
         var splitNote = v.split_count > 1 ? ' (' + v.split_count + '명, ' + v.amount.toLocaleString('ko-KR') + '원 ÷ ' + v.split_count + ')' : '';
         return '<li>' +
-            '<span class="mv-date">' + utils.escapeHtml(v.visited_at) + '</span>' +
+            '<span class="mv-date">' + utils.escapeHtml(utils.formatDateKo(v.visited_at)) + '</span>' +
             '<span class="mv-amount">' + perVisit + '<span class="mv-split">' + splitNote + '</span></span>' +
             '<button type="button" class="manage-visit-del" data-visit-id="' + v.id + '" aria-label="이 방문 기록 삭제">삭제</button>' +
           '</li>';

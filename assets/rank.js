@@ -3,7 +3,8 @@
      (window.NaToGam.utils.compareRestaurants, assets/utils.js)
    · 상위 3곳은 포디움(ref/rank.jpg 참고, 2위-1위-3위 순으로 배치),
      4위부터는 순번 리스트.
-   · 사진이 없으므로 아바타는 무채색 원 위에 식당명 첫 글자를 얹는다.
+   · 사진이 없으므로 아바타는 원 위에 등급별 돼지 캐릭터를 얹는다(미지정만
+     식당명 첫 글자로 대체, utils.gradePigImg — cardlist.js와 같은 에셋).
    · 이제 실데이터(saved_restaurants + visits)라 사용자마다 결과가 다르다.
      그래서 cardlist.html과 마찬가지로 로그인 게이트를 건다.
    · type="module"이라 auth.js(마찬가지로 module) 다음에 실행된다 — 이
@@ -22,6 +23,19 @@
     return utils.escapeHtml(s ? s.charAt(0) : '?');
   }
 
+  /* 아바타 — 등급별 돼지 캐릭터(cardlist·랜딩과 같은 에셋, utils.gradePigImg).
+     미지정 등급은 전용 에셋이 없어 모노그램으로 대체한다. 포디움(상위 3)은
+     항상 화면 맨 위라 즉시 로드하고, 4위 이하 리스트만 지연 로드한다. */
+  function avatarHTML(r, extraCls) {
+    var cls = 'rank-avatar' + (extraCls ? ' ' + extraCls : '');
+    var pigSrc = utils.gradePigImg(r.grade);
+    if (pigSrc) {
+      var lazyAttr = extraCls ? ' loading="lazy"' : '';
+      return '<span class="' + cls + '"><img src="' + pigSrc + '" alt=""' + lazyAttr + '></span>';
+    }
+    return '<span class="' + cls + '">' + monogram(r.name) + '</span>';
+  }
+
   function wonMan(restaurant) {
     return Math.round(utils.totalSpent(restaurant) / 10000).toLocaleString('ko-KR');
   }
@@ -29,10 +43,11 @@
   /* ── 포디움 카드 한 장 ── */
   function podiumItemHTML(r, rankIndex) {
     var meta = utils.gradeMeta(r.grade);
-    return '<div class="rank-podium-item p' + (rankIndex + 1) + '">' +
+    return '<div class="rank-podium-item ' + meta.cls + ' p' + (rankIndex + 1) + '">' +
         '<span class="rank-no">' + (rankIndex + 1) + '</span>' +
-        '<span class="rank-avatar">' + monogram(r.name) + '</span>' +
+        avatarHTML(r) +
         '<span class="rank-name">' + utils.escapeHtml(r.name) + '</span>' +
+        '<span class="rank-visits">방문 ' + utils.formatVisits(utils.visitCount(r)) + '</span>' +
         '<span class="rank-amount">' + wonMan(r) + '만원</span>' +
         '<span class="rank-pill">' + meta.name + '</span>' +
       '</div>';
@@ -60,9 +75,9 @@
     var html = '<ol class="rank-list" start="' + startRank + '">';
     rest.forEach(function (r, i) {
       var meta = utils.gradeMeta(r.grade);
-      html += '<li><div class="rank-row">' +
+      html += '<li><div class="rank-row ' + meta.cls + '">' +
           '<span class="rank-idx">' + (startRank + i) + '</span>' +
-          '<span class="rank-avatar rank-avatar-sm">' + monogram(r.name) + '</span>' +
+          avatarHTML(r, 'rank-avatar-sm') +
           '<span class="rank-row-name">' +
             '<span class="rank-name">' + utils.escapeHtml(r.name) + '</span>' +
             '<span class="rank-sub">' + meta.name + ' · ' + utils.formatVisits(utils.visitCount(r)) + '</span>' +

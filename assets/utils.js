@@ -16,10 +16,24 @@
   };
   var GRADE_UNASSIGNED = { name: '미지정', short: '미지정', cls: 'g-u' };
 
+  /* 등급별 캐릭터(돼지) 이미지. cardlist·랭킹·랜딩이 같은 에셋을 공유한다.
+     미지정은 전용 에셋이 없다 — 호출부가 null을 받아 대체 표시(예: 모노그램)로 넘어간다. */
+  var GRADE_PIG_IMG = {
+    S: 'assets/img/pig-s.png',
+    A: 'assets/img/pig-a.png',
+    B: 'assets/img/pig-b.png',
+    C: 'assets/img/pig-c.png'
+  };
+
   /* 등급 코드로 표시 정보를 가져온다. null/undefined/알 수 없는 코드는
      전부 "미지정"으로 취급한다 — 담기만 하고 등급을 아직 안 준 가게. */
   function gradeMeta(code) {
     return GRADE_META[code] || GRADE_UNASSIGNED;
+  }
+
+  /* 등급 코드 → 캐릭터 이미지 경로. 미지정/알 수 없는 코드는 null. */
+  function gradePigImg(code) {
+    return GRADE_PIG_IMG[code] || null;
   }
 
   /* 등급 코드 → 순위 인덱스. 0이 최상위(인생맛집).
@@ -87,6 +101,21 @@
     return n + '회';
   }
 
+  /* 방문 날짜(YYYY-MM-DD, <input type=date> 원본값) → "2026년 8월 1일" 표시용.
+     날짜뿐인 값이라 new Date()가 UTC 자정으로 해석하지만, KST(UTC+9)로
+     포맷해도 자정 다음날로 안 넘어가 날짜가 밀리지 않는다. 값이 없거나
+     파싱 실패하면 원본 문자열을 그대로 돌려준다. */
+  function formatDateKo(isoDate) {
+    if (!isoDate) return '';
+    var d = new Date(isoDate);
+    if (isNaN(d.getTime())) return isoDate;
+    try {
+      return new Intl.DateTimeFormat('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }).format(d);
+    } catch (e) {
+      return isoDate;
+    }
+  }
+
   /* 카카오 category_name은 "음식점 > 양식 > 이탈리안"처럼 대분류 경로
      문자열이다. 맞춤 추천이 비교할 saved_places.category는 "양식"·"카페"
      같은 단순 라벨이라 그대로는 거의 매칭이 안 된다 — 경로의 두 번째
@@ -148,9 +177,11 @@
     GRADE_ORDER: GRADE_ORDER,
     GRADE_META: GRADE_META,
     gradeMeta: gradeMeta,
+    gradePigImg: gradePigImg,
     gradeRank: gradeRank,
     visitCount: visitCount,
     totalSpent: totalSpent,
+    formatDateKo: formatDateKo,
     compareRestaurants: compareRestaurants,
     formatWon: formatWon,
     formatWonExact: formatWonExact,

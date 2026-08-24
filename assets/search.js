@@ -52,6 +52,9 @@
   function runKakaoSearch(query) {
     if (!query) return;
 
+    searchBtn.disabled = true;
+    searchBtn.textContent = '검색 중…';
+
     fetch('/api/kakao-search?query=' + encodeURIComponent(query))
       .then(function (res) {
         if (!res.ok) return Promise.reject();
@@ -66,7 +69,11 @@
         }
       })
       .catch(function () {
-        renderMessage('검색 중 오류가 발생했습니다');
+        renderMessage('검색 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+      })
+      .then(function () {
+        searchBtn.disabled = false;
+        searchBtn.textContent = '검색';
       });
   }
 
@@ -218,7 +225,7 @@
         renderAiResult(container, toCache);
       })
       .catch(function () {
-        renderAiError(container, 'AI 분석에 실패했습니다.');
+        renderAiError(container, 'AI 분석에 실패했습니다. 잠시 후 다시 시도해 주세요.');
       });
   }
 
@@ -233,7 +240,7 @@
   /* ── 리뷰 패널 렌더링 ── */
   function renderReviewLoading() {
     reviewPanel.hidden = false;
-    reviewPanel.innerHTML = '<p class="review-loading">리뷰를 불러오는 중 ...</p>';
+    reviewPanel.innerHTML = '<p class="review-loading">리뷰를 불러오는 중…</p>';
   }
 
   function renderReviewError(msg) {
@@ -247,7 +254,7 @@
   function renderReviewPanel(data) {
     var html = '<button type="button" class="btn-ghost" id="reviewCloseBtn">✕ 닫기</button>';
 
-    html += '<div class="review-head"><h3>' + escapeHtml(data.placeName) + '</h3>' +
+    html += '<div class="review-head"><h2>' + escapeHtml(data.placeName) + '</h2>' +
       '<span class="label">리뷰 ' + data.reviewCount + '개 · 최근 리뷰 최대 5개 표시</span></div>';
 
     if (!data.reviews || data.reviews.length === 0) {
