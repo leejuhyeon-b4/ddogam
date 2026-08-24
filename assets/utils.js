@@ -62,10 +62,25 @@
     return a.id < b.id ? -1 : (a.id > b.id ? 1 : 0);
   }
 
-  /* 원 → 만원 단위 축약. DESIGN §4.3 */
+  /* 원 → 만원 단위 축약. DESIGN §4.3. 여러 방문을 합친 누적 총액처럼
+     큰 금액을 간략히 보여줄 때만 쓴다 — 방문 1건의 n분의1 금액처럼
+     작은 값을 이걸로 보여주면 반올림 때문에 15000/2=7500원이 "1만원"으로
+     보이는 식으로 왜곡된다. 그런 값은 formatWonExact를 쓴다. */
   function formatWon(won) {
     var man = Math.round(won / 10000);
     return man.toLocaleString('ko-KR') + '만원';
+  }
+
+  /* 원 단위 그대로, 반올림 없이(가능한 만큼) 정확히 표시. 1원 미만
+     나머지만 정수 원 단위로 맞춘다(원 이하 화폐 단위가 없어서 불가피함) —
+     "15000원을 2명이 나누면 7500원"처럼 딱 떨어지는 값은 그대로 나온다. */
+  function formatWonExact(won) {
+    return Math.round(won).toLocaleString('ko-KR') + '원';
+  }
+
+  /* 방문 한 건의 1인당 금액 — amount ÷ split_count. */
+  function splitAmount(visit) {
+    return visit.amount / (visit.split_count || 1);
   }
 
   function formatVisits(n) {
@@ -84,12 +99,13 @@
   /* 로그인한 사용자가 담은 가게 + 각 가게의 방문 기록을 함께 가져온다.
      saved_restaurants가 Restaurant, visits가 그 위에 쌓이는 방문 기록이다
      (§4.2 원칙대로 visit_count/total_spent는 저장하지 않고 여기서 조립만 함).
+     user_id로 따로 걸러 달라고 하지 않는다 — RLS(select_own_saved_restaurants)가
+     이미 "내 행만" 돌려주므로 전체를 요청해도 결과는 내 것뿐이다.
      cardlist.js/rank.js가 공통으로 쓰므로 여기 하나로 모아둔다. */
-  function fetchMyRestaurants(supabase, userId) {
+  function fetchMyRestaurants(supabase) {
     return supabase
       .from('saved_restaurants')
       .select('id,name,grade,address,category,visits(id,visited_at,amount,split_count,memo)')
-      .eq('user_id', userId)
       .order('created_at', { ascending: true })
       .then(function (res) {
         if (res.error) return Promise.reject(res.error);
@@ -106,6 +122,8 @@
     totalSpent: totalSpent,
     compareRestaurants: compareRestaurants,
     formatWon: formatWon,
+    formatWonExact: formatWonExact,
+    splitAmount: splitAmount,
     formatVisits: formatVisits,
     escapeHtml: escapeHtml,
     fetchMyRestaurants: fetchMyRestaurants

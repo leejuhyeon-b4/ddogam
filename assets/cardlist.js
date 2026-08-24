@@ -1,7 +1,8 @@
-/* 나또감 — 내 카드 도감(판) 페이지
+/* 나또감 — 내 카드 도감(판) 페이지 (= 마이페이지)
    · saved_restaurants(담은 가게) + visits(방문 기록) 실데이터를 등급별
      구역(board-zone)에 배치해 보여준다. 카드를 누르면 관리 모달이 열려
-     등급을 정하거나 방문(날짜·금액·인원수)을 추가/삭제할 수 있다.
+     등급을 정하거나 방문(날짜·금액·인원수)을 추가/삭제할 수 있고,
+     카드 우상단 × 버튼으로 가게 자체를 목록/DB에서 지울 수 있다.
    · window.NaToGam.auth(assets/auth.js)가 먼저 실행돼 있어야 하므로
      cardlist.html에서 이 스크립트는 auth.js 다음에 로드한다.
    · window.NaToGam.utils(classic script)는 이 파일보다 먼저 로드돼 있어야 한다. */
@@ -32,28 +33,50 @@
     }
   }
 
-  /* ── 카드 한 장 — 5분할, 누르면 관리 모달이 열린다 ── */
+  /* ── 아무것도 안 담은 상태 ── */
+  function emptyStateHTML() {
+    return '<div class="cardlist-login">' +
+        '<p class="lede">아직 담은 맛집이 없어요. 검색하러 가볼까요?</p>' +
+        '<a class="btn-brass" href="search.html">검색하러 가기</a>' +
+      '</div>';
+  }
+
+  /* ── 미지정 등급 안내 배너 — 가장 먼저 담긴 미지정 가게로 바로 연결 ── */
+  function unassignedBannerHTML(firstUnassigned) {
+    return '<div class="cardlist-banner">' +
+        '<p>등급 미지정 맛집이 있어요. 등급을 정해볼까요?</p>' +
+        '<button type="button" class="btn-brass" id="cardlistUnassignedBtn" data-id="' + firstUnassigned.id + '">' +
+          '미지정 맛집 수정하러 가기' +
+        '</button>' +
+      '</div>';
+  }
+
+  /* ── 카드 한 장 — 5분할. 카드 전체는 관리 모달을 열고,
+     우상단 × 버튼만 따로 삭제한다(버튼 안에 버튼을 넣을 수 없어 두 버튼을
+     같은 칸에 겹쳐 쌓는다 — .card5-open이 전체를 덮고 .card5-del이 그 위). ── */
   function card5HTML(restaurant) {
     var meta = utils.gradeMeta(restaurant.grade);
     var visits = utils.visitCount(restaurant);
     var spentMan = Math.round(utils.totalSpent(restaurant) / 10000).toLocaleString('ko-KR');
     var name = utils.escapeHtml(restaurant.name);
 
-    return '<button type="button" class="card5" data-id="' + restaurant.id + '" aria-label="' + name + ' 관리">' +
+    return '<div class="card5" data-id="' + restaurant.id + '">' +
+        '<button type="button" class="card5-open" data-id="' + restaurant.id + '" aria-label="' + name + ' 관리"></button>' +
+        '<button type="button" class="card5-del" data-id="' + restaurant.id + '" aria-label="' + name + ' 목록에서 삭제">✕</button>' +
         '<span class="c5-name"><span class="cname">' + name + '</span></span>' +
         '<span class="c5-image" aria-hidden="true"></span>' +
         '<span class="c5-grade"><span class="c5-grade-name">' + meta.name + '</span></span>' +
         '<span class="c5-visits"><span class="st-k">방문</span><b>' + visits + '</b><i>회</i></span>' +
         '<span class="c5-spent"><span class="st-k">누적</span><b>' + spentMan + '</b><i>만원</i></span>' +
-      '</button>';
+      '</div>';
   }
 
   function emptySlotHTML() {
     return '<div class="board-slot-empty"><span>아직 등록한 맛집이 없습니다</span></div>';
   }
 
-  /* ── 로그인 상태 — 등급 구역(S→A→B→C→미지정)으로 나눈 도감판 ── */
-  function renderBoard() {
+  /* ── 등급 구역(S→A→B→C→미지정)으로 나눈 도감판 ── */
+  function boardHTML() {
     var groups = utils.GRADE_ORDER.concat([null]);   // 마지막은 미지정(PRD §4.1 순서)
     var html = '<div class="board">';
 
@@ -85,18 +108,33 @@
     });
 
     html += '</div>';
+    return html;
+  }
+
+  /* ── 로그인 상태 화면 전체 조립 — 빈 상태 / 미지정 배너 / 도감판 ── */
+  function renderContent() {
+    if (restaurants.length === 0) {
+      root.innerHTML = emptyStateHTML();
+      return;
+    }
+
+    var html = '';
+    var firstUnassigned = restaurants.filter(function (r) { return r.grade == null; })[0];
+    if (firstUnassigned) html += unassignedBannerHTML(firstUnassigned);
+    html += boardHTML();
     root.innerHTML = html;
   }
 
   function renderLoggedIn() {
     root.innerHTML = '<p class="note">불러오는 중…</p>';
-    utils.fetchMyRestaurants(window.NaToGam.auth.getClient(), currentUser.id)
+    utils.fetchMyRestaurants(window.NaToGam.auth.getClient())
       .then(function (data) {
         restaurants = data;
         loadedUserId = currentUser.id;
-        renderBoard();
+        renderContent();
       })
-      .catch(function () {
+      .catch(function (err) {
+        console.error('내 카드 불러오기 실패:', err && err.message);
         root.innerHTML = '<p class="note">불러오지 못했습니다. 새로고침해 주세요.</p>';
       });
   }
@@ -112,13 +150,32 @@
     renderLoggedIn();
   }
 
-  /* 카드 클릭 → 관리 모달 */
+  /* 카드 클릭 위임 — 관리 열기 · 삭제 · 미지정 배너 버튼 */
   root.addEventListener('click', function (e) {
-    var btn = e.target.closest ? e.target.closest('.card5') : null;
-    if (!btn) return;
-    var restaurant = restaurants.filter(function (r) { return r.id === btn.dataset.id; })[0];
-    if (restaurant) openManageModal(restaurant.id);
+    var delBtn = e.target.closest ? e.target.closest('.card5-del') : null;
+    if (delBtn) { deleteRestaurant(delBtn.dataset.id); return; }
+
+    var openBtn = e.target.closest ? e.target.closest('.card5-open') : null;
+    if (openBtn) { openManageModal(openBtn.dataset.id); return; }
+
+    var bannerBtn = e.target.closest ? e.target.closest('#cardlistUnassignedBtn') : null;
+    if (bannerBtn) { openManageModal(bannerBtn.dataset.id); return; }
   });
+
+  function deleteRestaurant(id) {
+    var restaurant = restaurants.filter(function (r) { return r.id === id; })[0];
+    if (!restaurant) return;
+    if (!window.confirm('"' + restaurant.name + '"을(를) 목록에서 삭제할까요? 방문 기록도 함께 지워집니다.')) return;
+
+    var supabase = window.NaToGam.auth.getClient();
+    supabase.from('saved_restaurants').delete().eq('id', id)
+      .then(function (res) {
+        if (res.error) { console.error('삭제 실패:', res.error.message); return; }
+        restaurants = restaurants.filter(function (r) { return r.id !== id; });
+        if (manageRestaurantId === id) closeManageModal();
+        renderContent();
+      });
+  }
 
   /* ═══════════════════════════════════════════════
      관리 모달 — 등급 지정 · 방문 추가/삭제
@@ -147,6 +204,7 @@
     manageOverlay = overlay;
     manageContent = overlay.querySelector('#manageContent');
 
+    /* 뒤로가기/닫기 — × 버튼, 바깥 클릭, Esc 세 갈래 모두 지원 */
     overlay.querySelector('#manageCloseBtn').addEventListener('click', closeManageModal);
     overlay.addEventListener('click', function (e) { if (e.target === overlay) closeManageModal(); });
     document.addEventListener('keydown', function (e) {
@@ -215,11 +273,11 @@
       html += '<p class="note">아직 방문 기록이 없습니다.</p>';
     } else {
       html += '<ul class="manage-visit-list">' + visits.map(function (v) {
-        var amountMan = Math.round((v.amount / (v.split_count || 1)) / 10000).toLocaleString('ko-KR');
+        var perVisit = utils.formatWonExact(utils.splitAmount(v));
         var splitNote = v.split_count > 1 ? ' (' + v.split_count + '명, ' + v.amount.toLocaleString('ko-KR') + '원 ÷ ' + v.split_count + ')' : '';
         return '<li>' +
             '<span class="mv-date">' + utils.escapeHtml(v.visited_at) + '</span>' +
-            '<span class="mv-amount">' + amountMan + '만원<span class="mv-split">' + splitNote + '</span></span>' +
+            '<span class="mv-amount">' + perVisit + '<span class="mv-split">' + splitNote + '</span></span>' +
             '<button type="button" class="manage-visit-del" data-visit-id="' + v.id + '" aria-label="이 방문 기록 삭제">삭제</button>' +
           '</li>';
       }).join('') + '</ul>';
@@ -250,7 +308,7 @@
         if (res.error) { console.error('등급 변경 실패:', res.error.message); return; }
         restaurant.grade = code;
         renderManageContent();
-        renderBoard();
+        renderContent();
       });
   }
 
@@ -281,7 +339,7 @@
       }
       restaurant.visits.push(res.data[0]);
       renderManageContent();
-      renderBoard();
+      renderContent();
     });
   }
 
@@ -295,7 +353,7 @@
         if (res.error) { console.error('방문 삭제 실패:', res.error.message); return; }
         restaurant.visits = restaurant.visits.filter(function (v) { return v.id !== visitId; });
         renderManageContent();
-        renderBoard();
+        renderContent();
       });
   }
 

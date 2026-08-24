@@ -77,6 +77,8 @@ header{position:sticky;top:0;z-index:30;background:rgba(218,213,204,.9);
 }
 .bar{max-width:var(--maxw);margin:0 auto;padding:var(--sm) var(--lg);display:flex;align-items:center;justify-content:space-between;gap:var(--md)}
 .brand{font-size:16px;font-weight:800;letter-spacing:-.02em}
+/* 로그인/로그아웃 영역이 위, 카드·검색·랭킹 링크가 그 아래 한 줄 — 둘 다 우측 정렬 */
+.bar-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
 .brand em{font-style:normal;color:var(--ash);font-weight:500;margin-left:var(--sm);font-size:12px;letter-spacing:0}
 
 /* ── 히어로 ── */
@@ -557,6 +559,15 @@ a.brand{text-decoration:none;color:inherit}
    ═══════════════════════════════════════════════ */
 .cardlist-login{margin-top:var(--lg)}
 
+/* ── 미지정 등급 안내 배너 ── */
+.cardlist-banner{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--md);
+  background:#FAF8F5;border:1px solid rgba(42,39,36,.14);border-radius:var(--radius);
+  padding:var(--md) var(--lg);margin-top:var(--lg);
+}
+.cardlist-banner p{margin:0;font-size:14px;color:var(--ink)}
+.cardlist-banner .btn-brass{padding:10px 20px;font-size:14px;flex:none}
+
 /* ═══════════════════════════════════════════════
    카드 도감(판) — ref/board.jpg의 "라벨 붙은 구역 +
    카드 슬롯 윤곽" 구조를 무채색 톤으로 재해석.
@@ -610,6 +621,7 @@ a.brand{text-decoration:none;color:inherit}
    좌우 상/하단 4칸은 거의 정사각형, 가운데 등급 칸은 가로로 긴 띠.
    등급별 재질·색상 구분 없음 — 카드는 전부 같은 무채색 톤이다. */
 .card5{
+  position:relative;
   aspect-ratio:3/4;border-radius:var(--radius);
   background:#FAF8F5;
   border:1px solid rgba(42,39,36,.14);
@@ -620,16 +632,31 @@ a.brand{text-decoration:none;color:inherit}
   grid-template-rows:3fr 2fr 3fr;
   grid-template-areas:"name image" "grade grade" "visits spent";
   gap:6px;
-  width:100%;
-  font:inherit;color:inherit;text-align:left;cursor:pointer;
   transition:transform 120ms ease-out,box-shadow 120ms ease-out;
 }
 .card5:hover{box-shadow:0 4px 10px rgba(42,39,36,.16);transform:translateY(-1px)}
-.card5:focus-visible{outline:2px solid var(--bronze);outline-offset:2px}
+.card5:focus-within{outline:2px solid var(--bronze);outline-offset:2px}
 @media (hover:none){ .card5:hover{transform:none} }
 @supports not (aspect-ratio:3/4){
-  .card5{height:0;padding-bottom:133.333%;position:relative}
+  .card5{height:0;padding-bottom:133.333%}
 }
+
+/* 카드 전체를 덮는 투명 버튼(관리 열기) 위에, 우상단 × 버튼(삭제)을 따로
+   쌓는다 — button 안에 button을 넣을 수 없어 형제로 겹쳐서 처리한다. */
+.card5-open{
+  position:absolute;inset:0;z-index:1;border-radius:inherit;
+  background:none;border:none;padding:0;margin:0;cursor:pointer;
+}
+.card5-del{
+  position:absolute;top:4px;right:4px;z-index:2;
+  width:22px;height:22px;border-radius:50%;
+  display:grid;place-items:center;padding:0;
+  font-size:12px;line-height:1;color:var(--ash);
+  background:rgba(255,255,255,.9);border:1px solid rgba(42,39,36,.18);
+  cursor:pointer;
+}
+.card5-del:hover{color:var(--ink);border-color:var(--ink);background:#FFFFFF}
+.card5-del:focus-visible{outline:2px solid var(--bronze);outline-offset:1px}
 
 .c5-name{grid-area:name;min-width:0;display:flex;align-items:flex-start}
 .c5-name .cname{font-size:13px}

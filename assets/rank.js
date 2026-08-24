@@ -108,12 +108,13 @@
     if (!user) { loadedUserId = null; renderLoggedOut(); return; }
     if (user.id === loadedUserId) return;
     renderLoading();
-    utils.fetchMyRestaurants(window.NaToGam.auth.getClient(), user.id)
+    utils.fetchMyRestaurants(window.NaToGam.auth.getClient())
       .then(function (data) {
         loadedUserId = user.id;   // 성공했을 때만 기록 — 실패하면 다음 재알림 때 다시 시도
         renderRanked(data);
       })
-      .catch(function () {
+      .catch(function (err) {
+        console.error('랭킹 불러오기 실패:', err && err.message);
         root.innerHTML = '<p class="note">불러오지 못했습니다. 새로고침해 주세요.</p>';
       });
   }
