@@ -601,6 +601,7 @@ a.brand{text-decoration:none;color:inherit}
 .zone-a .board-grid{grid-template-columns:repeat(auto-fill,minmax(165px,1fr))}
 .zone-b .board-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
 .zone-c .board-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+.zone-u .board-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
 
 /* ═══════════════════════════════════════════════
    카드 — 5분할 (ref/card.jpg 참고)
@@ -619,7 +620,13 @@ a.brand{text-decoration:none;color:inherit}
   grid-template-rows:3fr 2fr 3fr;
   grid-template-areas:"name image" "grade grade" "visits spent";
   gap:6px;
+  width:100%;
+  font:inherit;color:inherit;text-align:left;cursor:pointer;
+  transition:transform 120ms ease-out,box-shadow 120ms ease-out;
 }
+.card5:hover{box-shadow:0 4px 10px rgba(42,39,36,.16);transform:translateY(-1px)}
+.card5:focus-visible{outline:2px solid var(--bronze);outline-offset:2px}
+@media (hover:none){ .card5:hover{transform:none} }
 @supports not (aspect-ratio:3/4){
   .card5{height:0;padding-bottom:133.333%;position:relative}
 }
@@ -695,3 +702,76 @@ a.brand{text-decoration:none;color:inherit}
 .rank-row-name .rank-name{font-size:14px}
 .rank-sub{display:block;font-size:11px;color:var(--ash);margin-top:2px}
 .rank-row .rank-amount{text-align:right;white-space:nowrap}
+
+/* ═══════════════════════════════════════════════
+   카드 관리 모달 — 등급 지정 · 방문 추가/삭제
+   .auth-overlay/.auth-modal과 같은 뼈대, 로그인 모달과 별개 인스턴스로 둔다.
+   ═══════════════════════════════════════════════ */
+.manage-overlay{
+  position:fixed;inset:0;z-index:100;
+  background:rgba(42,39,36,.5);
+  display:flex;align-items:center;justify-content:center;
+  padding:var(--lg);overflow-y:auto;
+}
+.manage-overlay[hidden]{display:none}
+.manage-modal{
+  position:relative;width:100%;max-width:420px;margin:auto;
+  background:#FAF8F5;border-radius:8px;
+  box-shadow:0 18px 34px rgba(42,39,36,.24),0 6px 12px rgba(42,39,36,.14);
+  padding:var(--lg);
+}
+.manage-close{
+  position:absolute;top:var(--md);right:var(--md);
+  font:inherit;font-size:14px;line-height:1;color:var(--ash);
+  background:none;border:none;padding:4px;cursor:pointer;
+}
+.manage-close:hover{color:var(--ink)}
+.manage-content h2{font-size:19px;font-weight:800;letter-spacing:-.02em;margin:0 0 var(--xs);padding-right:28px}
+.manage-content h3{display:flex;align-items:baseline;gap:var(--sm);flex-wrap:wrap;
+  margin:var(--lg) 0 var(--sm);padding-top:var(--md);border-top:1px solid rgba(42,39,36,.12)}
+.manage-content h3 .label{font-weight:400}
+.manage-addr{font-size:13px;color:var(--ash);margin:0 0 var(--md)}
+
+.manage-grades{display:flex;flex-wrap:wrap;gap:var(--sm)}
+.manage-grade-btn{
+  font:inherit;font-size:13px;font-weight:600;
+  border:1px solid rgba(42,39,36,.28);border-radius:999px;
+  padding:7px 14px;background:none;color:var(--ink);cursor:pointer;
+}
+.manage-grade-btn:hover{border-color:var(--ink)}
+.manage-grade-btn.active{border-color:var(--brass);background:var(--brass);color:#FFFFFF}
+.manage-grade-current{font-size:12px;color:var(--ash);margin:var(--sm) 0 0}
+.manage-grade-clear{
+  font:inherit;font-size:12px;color:var(--ash);
+  background:none;border:none;padding:0;margin-left:var(--xs);
+  cursor:pointer;text-decoration:underline;text-underline-offset:2px;
+}
+.manage-grade-clear:hover{color:var(--ink)}
+
+.manage-visit-form{display:flex;flex-wrap:wrap;gap:var(--sm);align-items:end;margin-bottom:var(--md)}
+.manage-field{display:block;flex:1 1 90px;min-width:0}
+.manage-field--split{flex:0 1 70px}
+.manage-field span{display:block;font-size:11px;font-weight:500;letter-spacing:.02em;color:var(--ash);margin-bottom:var(--xs)}
+.manage-field input{
+  width:100%;font:inherit;font-size:14px;color:var(--ink);
+  border:1px solid rgba(42,39,36,.24);border-radius:var(--radius);
+  padding:8px 10px;background:#FFFFFF;
+}
+.manage-field input:focus-visible{outline:2px solid var(--bronze);outline-offset:2px}
+.manage-visit-form .btn-brass{padding:9px 16px;font-size:14px;flex:none}
+
+.manage-visit-list{list-style:none;margin:0;padding:0}
+.manage-visit-list li{
+  display:flex;align-items:center;gap:var(--sm);
+  padding:var(--sm) 0;border-top:1px solid rgba(42,39,36,.12);
+}
+.manage-visit-list li:first-child{border-top:none}
+.mv-date{font-size:13px;color:var(--ash);flex:none}
+.mv-amount{font-size:14px;font-weight:600;flex:1 1 auto;min-width:0}
+.mv-split{font-size:11px;font-weight:400;color:var(--ash);margin-left:4px}
+.manage-visit-del{
+  font:inherit;font-size:12px;color:var(--ash);
+  background:none;border:none;padding:4px 0;flex:none;
+  cursor:pointer;text-decoration:underline;text-underline-offset:2px;
+}
+.manage-visit-del:hover{color:var(--ink)}

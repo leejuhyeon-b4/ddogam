@@ -1,8 +1,7 @@
 /* 나또감 — 공용 유틸
-   · 등급 순위 · 방문/누적 금액 파생 계산 · 정렬 · 금액 포맷
+   · 등급 순위 · 방문/누적 금액 파생 계산 · 정렬 · 금액 포맷 · 실데이터 조회
    · window.NaToGam.utils에 붙는다. classic script이므로 utils.js는
-     mock-data.js / auth.js(module) / cardlist.js / rank.js보다
-     먼저 로드돼야 한다. */
+     auth.js(module) / cardlist.js / rank.js보다 먼저 로드돼야 한다. */
 (function () {
   'use strict';
 
@@ -15,9 +14,16 @@
     B: { name: '무난',     short: '무난', cls: 'g-b' },
     C: { name: '비추',     short: '비추', cls: 'g-c' }
   };
+  var GRADE_UNASSIGNED = { name: '미지정', short: '미지정', cls: 'g-u' };
+
+  /* 등급 코드로 표시 정보를 가져온다. null/undefined/알 수 없는 코드는
+     전부 "미지정"으로 취급한다 — 담기만 하고 등급을 아직 안 준 가게. */
+  function gradeMeta(code) {
+    return GRADE_META[code] || GRADE_UNASSIGNED;
+  }
 
   /* 등급 코드 → 순위 인덱스. 0이 최상위(인생맛집).
-     알 수 없는 코드(미지정 등)는 맨 뒤로 보낸다. */
+     미지정(null 등)은 맨 뒤로 보낸다. */
   function gradeRank(code) {
     var i = GRADE_ORDER.indexOf(code);
     return i === -1 ? GRADE_ORDER.length : i;
@@ -75,15 +81,33 @@
       .replace(/'/g, '&#39;');
   }
 
+  /* 로그인한 사용자가 담은 가게 + 각 가게의 방문 기록을 함께 가져온다.
+     saved_restaurants가 Restaurant, visits가 그 위에 쌓이는 방문 기록이다
+     (§4.2 원칙대로 visit_count/total_spent는 저장하지 않고 여기서 조립만 함).
+     cardlist.js/rank.js가 공통으로 쓰므로 여기 하나로 모아둔다. */
+  function fetchMyRestaurants(supabase, userId) {
+    return supabase
+      .from('saved_restaurants')
+      .select('id,name,grade,address,category,visits(id,visited_at,amount,split_count,memo)')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: true })
+      .then(function (res) {
+        if (res.error) return Promise.reject(res.error);
+        return res.data || [];
+      });
+  }
+
   window.NaToGam.utils = {
     GRADE_ORDER: GRADE_ORDER,
     GRADE_META: GRADE_META,
+    gradeMeta: gradeMeta,
     gradeRank: gradeRank,
     visitCount: visitCount,
     totalSpent: totalSpent,
     compareRestaurants: compareRestaurants,
     formatWon: formatWon,
     formatVisits: formatVisits,
-    escapeHtml: escapeHtml
+    escapeHtml: escapeHtml,
+    fetchMyRestaurants: fetchMyRestaurants
   };
 })();

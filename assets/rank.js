@@ -3,11 +3,12 @@
      (window.NaToGam.utils.compareRestaurants, assets/utils.js)
    · 상위 3곳은 포디움(ref/rank.jpg 참고, 2위-1위-3위 순으로 배치),
      4위부터는 순번 리스트.
-   · 사진이 없으므로 아바타는 등급 재질 텍스처 위에 식당명 첫 글자를 얹는다.
-   · 실제 저장 기능이 아직 없어 window.NaToGam.mockData의 목업 데이터로
-     그린다. 로그인 여부와 무관하게 동일한 결과를 보여주므로 이 페이지는
-     로그인 게이트를 걸지 않는다(auth.js는 헤더 로그인 영역 표시용으로만 로드).
-   · classic script — assets/utils.js, assets/mock-data.js보다 뒤에 로드한다. */
+   · 사진이 없으므로 아바타는 무채색 원 위에 식당명 첫 글자를 얹는다.
+   · 이제 실데이터(saved_restaurants + visits)라 사용자마다 결과가 다르다.
+     그래서 cardlist.html과 마찬가지로 로그인 게이트를 건다.
+   · classic script — assets/utils.js보다 뒤에 로드한다. auth.js(module)는
+     더 늦게 실행되므로 auth.onChange 구독 자체는 즉시 걸어 두고, 실제
+     로그인/비로그인 판단은 그 콜백이 불릴 때(=auth 준비된 뒤) 이뤄진다. */
 (function () {
   'use strict';
 
@@ -15,7 +16,6 @@
   if (!root) return;
 
   var utils = window.NaToGam.utils;
-  var restaurants = (window.NaToGam.mockData && window.NaToGam.mockData.restaurants) || [];
 
   function monogram(name) {
     var s = (name || '').trim();
@@ -28,7 +28,7 @@
 
   /* ── 포디움 카드 한 장 ── */
   function podiumItemHTML(r, rankIndex) {
-    var meta = utils.GRADE_META[r.grade];
+    var meta = utils.gradeMeta(r.grade);
     return '<div class="rank-podium-item p' + (rankIndex + 1) + '">' +
         '<span class="rank-no">' + (rankIndex + 1) + '</span>' +
         '<span class="rank-avatar">' + monogram(r.name) + '</span>' +
@@ -59,7 +59,7 @@
     if (rest.length === 0) return '';
     var html = '<ol class="rank-list" start="' + startRank + '">';
     rest.forEach(function (r, i) {
-      var meta = utils.GRADE_META[r.grade];
+      var meta = utils.gradeMeta(r.grade);
       html += '<li><div class="rank-row">' +
           '<span class="rank-idx">' + (startRank + i) + '</span>' +
           '<span class="rank-avatar rank-avatar-sm">' + monogram(r.name) + '</span>' +
@@ -74,18 +74,42 @@
     return html;
   }
 
-  function render() {
-    if (!utils || restaurants.length === 0) {
-      root.innerHTML = '<p class="note">아직 랭킹을 매길 데이터가 없습니다.</p>';
+  function renderRanked(restaurants) {
+    if (restaurants.length === 0) {
+      root.innerHTML = '<p class="note">아직 랭킹을 매길 가게가 없습니다. 검색에서 가게를 담아보세요.</p>';
       return;
     }
-
     var ranked = restaurants.slice().sort(utils.compareRestaurants);
     var top3 = ranked.slice(0, 3);
     var rest = ranked.slice(3);
-
     root.innerHTML = renderPodium(top3) + renderList(rest, 4);
   }
 
-  render();
+  function renderLoggedOut() {
+    root.innerHTML =
+      '<div class="cardlist-login">' +
+        '<p class="lede">로그인하면 내가 담은 가게들의 랭킹을 볼 수 있어요.</p>' +
+        '<button type="button" class="btn-brass" id="rankLoginBtn">로그인</button>' +
+      '</div>';
+    var btn = document.getElementById('rankLoginBtn');
+    if (btn) btn.addEventListener('click', function () { window.NaToGam.auth.openLoginModal(); });
+  }
+
+  function renderLoading() {
+    root.innerHTML = '<p class="note">불러오는 중…</p>';
+  }
+
+  function render(user) {
+    if (!user) { renderLoggedOut(); return; }
+    renderLoading();
+    utils.fetchMyRestaurants(window.NaToGam.auth.getClient(), user.id)
+      .then(renderRanked)
+      .catch(function () {
+        root.innerHTML = '<p class="note">불러오지 못했습니다. 새로고침해 주세요.</p>';
+      });
+  }
+
+  if (window.NaToGam && window.NaToGam.auth) {
+    window.NaToGam.auth.onChange(render);
+  }
 })();
