@@ -4,8 +4,15 @@
    · 비밀번호 처리는 전부 Supabase에 맡긴다. 여기서는 절대 비밀번호를 저장/기록하지 않는다.
 
    다른 기능이 "지금 로그인한 사람이 누구인지" 확인할 때는 이 파일이 만드는
-   window.NaToGam.auth 를 가져다 쓰면 된다 (예: 맛집 담기 버튼 → requireLogin()). */
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+   window.NaToGam.auth 를 가져다 쓰면 된다 (예: 맛집 담기 버튼 → requireLogin()).
+
+   · esm.sh는 진짜 코드 대신 "auth-js를 불러와라, postgrest-js를 불러와라…"
+     하는 안내 파일만 주고, 그 하위 의존성들이 또 각자 자기 의존성을 연쇄로
+     요청한다 — 실제로는 수십 개 요청이 순서대로(파일을 열어봐야 다음에
+     뭘 받을지 알아서 병렬이 안 됨) 이어진다. 느린 회선에서 로그인 관련
+     기능 전체가 멈춘 것처럼 보이던 원인이 이거였다. jsdelivr의 +esm은
+     의존성을 전부 미리 번들링해서 파일 1개로 준다 — 그걸로 바꾼다. */
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.3/+esm';
 
 (function () {
   'use strict';
