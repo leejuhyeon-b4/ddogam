@@ -101,19 +101,25 @@
 
   /* auth.onChange는 토큰 자동 갱신 때도 같은 사용자로 다시 불린다 —
      그때마다 다시 불러오면 화면이 매번 "불러오는 중…"으로 리셋된다.
-     실제로 사용자가 바뀐 경우에만 다시 불러온다. */
+     실제로 사용자가 바뀐 경우에만 다시 불러온다. 이미 같은 사용자로 요청이
+     진행 중일 때도 또 시작하지 않는다 — onChange가 짧은 시간에 두 번 불리면
+     요청이 겹쳐 돌면서 로딩 표시가 다시 리셋되는 걸 막는다. */
   var loadedUserId = null;
+  var loadingUserId = null;
 
   function render(user) {
-    if (!user) { loadedUserId = null; renderLoggedOut(); return; }
-    if (user.id === loadedUserId) return;
+    if (!user) { loadedUserId = null; loadingUserId = null; renderLoggedOut(); return; }
+    if (user.id === loadedUserId || user.id === loadingUserId) return;
+    loadingUserId = user.id;
     renderLoading();
     utils.fetchMyRestaurants(window.NaToGam.auth.getClient())
       .then(function (data) {
         loadedUserId = user.id;   // 성공했을 때만 기록 — 실패하면 다음 재알림 때 다시 시도
+        loadingUserId = null;
         renderRanked(data);
       })
       .catch(function (err) {
+        loadingUserId = null;
         console.error('랭킹 불러오기 실패:', err && err.message);
         root.innerHTML = '<p class="note">불러오지 못했습니다. 새로고침해 주세요.</p>';
       });

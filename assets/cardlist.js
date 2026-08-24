@@ -125,15 +125,20 @@
     root.innerHTML = html;
   }
 
+  var loadingUserId = null;   // 지금 요청이 진행 중인 사용자 id (중복 요청 방지)
+
   function renderLoggedIn() {
+    loadingUserId = currentUser.id;
     root.innerHTML = '<p class="note">불러오는 중…</p>';
     utils.fetchMyRestaurants(window.NaToGam.auth.getClient())
       .then(function (data) {
         restaurants = data;
         loadedUserId = currentUser.id;
+        loadingUserId = null;
         renderContent();
       })
       .catch(function (err) {
+        loadingUserId = null;
         console.error('내 카드 불러오기 실패:', err && err.message);
         root.innerHTML = '<p class="note">불러오지 못했습니다. 새로고침해 주세요.</p>';
       });
@@ -142,11 +147,14 @@
   /* auth.onChange는 로그인/로그아웃뿐 아니라 토큰 자동 갱신 때도 다시
      불린다(같은 사용자). 그때마다 매번 다시 불러오면 화면이 "불러오는
      중…"으로 리셋되며 이미 보고 있던 카드/모달이 순간적으로 사라져
-     로딩이 계속되는 것처럼 느껴진다 — 사용자가 실제로 바뀐 경우에만 다시 불러온다. */
+     로딩이 계속되는 것처럼 느껴진다 — 사용자가 실제로 바뀐 경우에만 다시 불러온다.
+     이미 같은 사용자로 요청이 진행 중일 때도 또 시작하지 않는다 — 짧은 시간에
+     onChange가 두 번 불리면(예: 세션 복원 직후 토큰 갱신) 요청이 겹쳐 돌면서
+     "불러오는 중…"이 다시 리셋되고 체감 로딩이 길어지는 걸 막는다. */
   function render(user) {
     currentUser = user;
-    if (!user) { loadedUserId = null; renderLoggedOut(); return; }
-    if (user.id === loadedUserId) return;   // 같은 사용자의 재알림 — 무시
+    if (!user) { loadedUserId = null; loadingUserId = null; renderLoggedOut(); return; }
+    if (user.id === loadedUserId || user.id === loadingUserId) return;
     renderLoggedIn();
   }
 

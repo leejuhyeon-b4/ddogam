@@ -71,16 +71,19 @@
     return best;
   }
 
-  function loadRecommend(user) {
-    if (!recommendRoot) return;
+  /* onSettled(success) — success=true는 "정상적으로 끝까지 처리됨"(추천이
+     비어있는 정상 상태 포함), false는 실제 오류라 다음 auth 재알림 때
+     다시 시도해야 함을 뜻한다. 둘 다 로딩 표시는 걷어낸다. */
+  function loadRecommend(user, onSettled) {
+    if (!recommendRoot) { onSettled(false); return; }
     var supabase = window.NaToGam.auth.getClient();
 
     utils.fetchMyRestaurants(supabase)
       .then(function (mine) {
-        if (mine.length === 0) { renderRecommendEmpty('담은 가게가 쌓이면 추천이 열립니다.'); return; }
+        if (mine.length === 0) { renderRecommendEmpty('담은 가게가 쌓이면 추천이 열립니다.'); onSettled(true); return; }
 
         var topCategory = topCategoryOf(mine);
-        if (!topCategory) { renderRecommendEmpty('가게에 카테고리 정보가 없어 추천을 만들 수 없습니다.'); return; }
+        if (!topCategory) { renderRecommendEmpty('가게에 카테고리 정보가 없어 추천을 만들 수 없습니다.'); onSettled(true); return; }
 
         var savedNames = {};
         mine.forEach(function (r) { savedNames[r.name] = true; });
@@ -94,7 +97,7 @@
               .filter(function (p) { return !savedNames[p.name]; })
               .slice(0, 5);
 
-            if (candidates.length === 0) { renderRecommendEmpty('"' + topCategory + '" 카테고리에서 더 추천할 가게가 없습니다.'); return; }
+            if (candidates.length === 0) { renderRecommendEmpty('"' + topCategory + '" 카테고리에서 더 추천할 가게가 없습니다.'); onSettled(true); return; }
 
             recommendRoot.innerHTML =
               '<p class="lede">자주 담는 <b>' + esc(topCategory) + '</b> 카테고리에서 골라봤어요.</p>' +
@@ -104,27 +107,35 @@
                     '<span class="raddr">' + esc(p.address || '') + '</span>' +
                   '</li>';
               }).join('') + '</ul>';
+            onSettled(true);
           })
           .catch(function (err) {
             console.error('맞춤 추천 후보 불러오기 실패:', err && err.message);
             renderRecommendEmpty('추천을 불러오지 못했습니다.');
+            onSettled(false);
           });
       })
       .catch(function (err) {
         console.error('맞춤 추천용 내 가게 불러오기 실패:', err && err.message);
         renderRecommendEmpty('추천을 불러오지 못했습니다.');
+        onSettled(false);
       });
   }
 
   /* auth.onChange는 토큰 자동 갱신 때도 같은 사용자로 다시 불린다 —
-     실제로 사용자가 바뀐 경우에만 다시 불러온다(cardlist.js/rank.js와 동일 패턴). */
+     실제로 사용자가 바뀐 경우에만 다시 불러온다(cardlist.js/rank.js와 동일 패턴).
+     loadedUserId는 성공했을 때만 기록하고, loadingUserId로 중복 요청도 막는다. */
   var loadedUserId = null;
+  var loadingUserId = null;
 
   function renderRecommend(user) {
-    if (!user) { loadedUserId = null; renderRecommendLoggedOut(); return; }
-    if (user.id === loadedUserId) return;
-    loadedUserId = user.id;
-    loadRecommend(user);
+    if (!user) { loadedUserId = null; loadingUserId = null; renderRecommendLoggedOut(); return; }
+    if (user.id === loadedUserId || user.id === loadingUserId) return;
+    loadingUserId = user.id;
+    loadRecommend(user, function (success) {
+      loadingUserId = null;
+      if (success) loadedUserId = user.id;
+    });
   }
 
   loadPopular();
