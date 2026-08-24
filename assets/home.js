@@ -23,7 +23,7 @@
     if (!popularRoot) return;
 
     var supabase = window.NaToGam.auth.getClient();
-    supabase.rpc('popular_restaurants', { limit_count: 5 })
+    utils.withTimeout(supabase.rpc('popular_restaurants', { limit_count: 5 }), 10000)
       .then(function (res) {
         if (res.error) return Promise.reject(res.error);
         var rows = res.data || [];
@@ -88,9 +88,10 @@
         var savedNames = {};
         mine.forEach(function (r) { savedNames[r.name] = true; });
 
-        supabase.from('saved_places').select('id,name,category,address')
-          .eq('category', topCategory)
-          .limit(30)
+        utils.withTimeout(
+          supabase.from('saved_places').select('id,name,category,address').eq('category', topCategory).limit(30),
+          10000
+        )
           .then(function (res) {
             if (res.error) return Promise.reject(res.error);
             var candidates = (res.data || [])
@@ -127,8 +128,10 @@
      loadedUserId는 성공했을 때만 기록하고, loadingUserId로 중복 요청도 막는다. */
   var loadedUserId = null;
   var loadingUserId = null;
+  var everRendered = false;   // 파수꾼 타이머가 "아직 한 번도 안 불림"을 판단하는 기준
 
   function renderRecommend(user) {
+    everRendered = true;
     if (!user) { loadedUserId = null; loadingUserId = null; renderRecommendLoggedOut(); return; }
     if (user.id === loadedUserId || user.id === loadingUserId) return;
     loadingUserId = user.id;
@@ -139,6 +142,23 @@
   }
 
   loadPopular();
+
+  /* 파수꾼 — auth.onChange가 무슨 이유로든 한 번도 안 불리면 "맞춤 추천"
+     칸의 정적 "불러오는 중…"이 영원히 그대로 남는다. */
+  if (recommendRoot) {
+    window.setTimeout(function () {
+      if (everRendered) return;
+      recommendRoot.innerHTML = '<p class="note">불러오는 데 너무 오래 걸리고 있어요.</p>' +
+        '<button type="button" class="btn-ghost" id="recommendWatchdogBtn">새로고침</button>';
+      var btn = document.getElementById('recommendWatchdogBtn');
+      if (btn) btn.addEventListener('click', function () { window.location.reload(); });
+    }, 10000);
+
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState !== 'visible' || everRendered) return;
+      if (window.NaToGam && window.NaToGam.auth) renderRecommend(window.NaToGam.auth.getUser());
+    });
+  }
 
   if (window.NaToGam && window.NaToGam.auth) {
     window.NaToGam.auth.onChange(renderRecommend);

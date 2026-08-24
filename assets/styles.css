@@ -65,6 +65,12 @@ section{padding:var(--xl) 0}
 .lede{color:var(--ash);max-width:56ch}
 .note{border-left:2px solid rgba(42,39,36,.2);padding-left:var(--md);color:var(--ash);font-size:14px}
 
+/* 로딩 문구가 가만히 있으면 "멈춘 화면"처럼 보인다 — 살짝 숨쉬듯 깜빡여서
+   아직 진행 중임을 알린다(정적 텍스트만으론 체감 대기 시간이 더 길게 느껴진다). */
+@keyframes loading-pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.loading-pulse{animation:loading-pulse 1.4s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.loading-pulse{animation:none}}
+
 :focus-visible{outline:2px solid var(--bronze);outline-offset:3px}
 
 /* ── 헤더 ── */

@@ -96,7 +96,7 @@
   }
 
   function renderLoading() {
-    root.innerHTML = '<p class="note">불러오는 중…</p>';
+    root.innerHTML = '<p class="note loading-pulse">불러오는 중…</p>';
   }
 
   /* auth.onChange는 토큰 자동 갱신 때도 같은 사용자로 다시 불린다 —
@@ -106,8 +106,10 @@
      요청이 겹쳐 돌면서 로딩 표시가 다시 리셋되는 걸 막는다. */
   var loadedUserId = null;
   var loadingUserId = null;
+  var everRendered = false;   // 파수꾼 타이머가 "아직 한 번도 안 불림"을 판단하는 기준
 
   function render(user) {
+    everRendered = true;
     if (!user) { loadedUserId = null; loadingUserId = null; renderLoggedOut(); return; }
     if (user.id === loadedUserId || user.id === loadingUserId) return;
     loadingUserId = user.id;
@@ -124,6 +126,22 @@
         root.innerHTML = '<p class="note">불러오지 못했습니다. 새로고침해 주세요.</p>';
       });
   }
+
+  /* 파수꾼 — auth.onChange가 무슨 이유로든 한 번도 안 불리면 정적 HTML의
+     "불러오는 중…"이 영원히 그대로 남는다. */
+  window.setTimeout(function () {
+    if (everRendered) return;
+    root.innerHTML = '<p class="note">불러오는 데 너무 오래 걸리고 있어요.</p>' +
+      '<button type="button" class="btn-ghost" id="rankWatchdogBtn">새로고침</button>';
+    var btn = document.getElementById('rankWatchdogBtn');
+    if (btn) btn.addEventListener('click', function () { window.location.reload(); });
+  }, 10000);
+
+  /* 다른 탭에 갔다 돌아오면 로딩이 풀리는 증상이 보고돼서 넣는다 — cardlist.js와 동일 */
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState !== 'visible' || everRendered) return;
+    if (window.NaToGam && window.NaToGam.auth) render(window.NaToGam.auth.getUser());
+  });
 
   if (window.NaToGam && window.NaToGam.auth) {
     window.NaToGam.auth.onChange(render);

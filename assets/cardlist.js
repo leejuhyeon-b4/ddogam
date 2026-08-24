@@ -129,7 +129,7 @@
 
   function renderLoggedIn() {
     loadingUserId = currentUser.id;
-    root.innerHTML = '<p class="note">불러오는 중…</p>';
+    root.innerHTML = '<p class="note loading-pulse">불러오는 중…</p>';
     utils.fetchMyRestaurants(window.NaToGam.auth.getClient())
       .then(function (data) {
         restaurants = data;
@@ -151,7 +151,10 @@
      이미 같은 사용자로 요청이 진행 중일 때도 또 시작하지 않는다 — 짧은 시간에
      onChange가 두 번 불리면(예: 세션 복원 직후 토큰 갱신) 요청이 겹쳐 돌면서
      "불러오는 중…"이 다시 리셋되고 체감 로딩이 길어지는 걸 막는다. */
+  var everRendered = false;   // 파수꾼 타이머가 "아직 한 번도 안 불림"을 판단하는 기준
+
   function render(user) {
+    everRendered = true;
     currentUser = user;
     if (!user) { loadedUserId = null; loadingUserId = null; renderLoggedOut(); return; }
     if (user.id === loadedUserId || user.id === loadingUserId) return;
@@ -364,6 +367,26 @@
         renderContent();
       });
   }
+
+  /* 파수꾼 — auth.onChange 구독 자체가 무슨 이유로든 한 번도 안 불리면
+     정적 HTML의 "불러오는 중…"이 영원히 그대로 남는다. 일정 시간 안에
+     render()가 한 번도 안 불렸으면 강제로 안내 + 새로고침 버튼을 띄운다. */
+  window.setTimeout(function () {
+    if (everRendered) return;
+    root.innerHTML = '<p class="note">불러오는 데 너무 오래 걸리고 있어요.</p>' +
+      '<button type="button" class="btn-ghost" id="cardlistWatchdogBtn">새로고침</button>';
+    var btn = document.getElementById('cardlistWatchdogBtn');
+    if (btn) btn.addEventListener('click', function () { window.location.reload(); });
+  }, 10000);
+
+  /* 다른 탭에 갔다 돌아오면 로딩이 풀리는 증상이 보고돼서 넣는다 —
+     비활성 탭에서 타이머/이벤트가 미뤄지는 브라우저 특성 때문일 수 있다.
+     탭이 다시 보일 때 아직 한 번도 렌더 안 됐으면 현재 로그인 상태를
+     즉시 한 번 더 확인해 렌더를 강제로 밀어준다. */
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState !== 'visible' || everRendered) return;
+    if (window.NaToGam && window.NaToGam.auth) render(window.NaToGam.auth.getUser());
+  });
 
   if (window.NaToGam && window.NaToGam.auth) {
     window.NaToGam.auth.onChange(render);

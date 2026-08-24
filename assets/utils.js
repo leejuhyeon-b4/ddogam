@@ -107,14 +107,33 @@
       .replace(/'/g, '&#39;');
   }
 
+  /* 어떤 이유로든(네트워크 정체, 브라우저 탭 잠금 등) promise가 안 끝나고
+     걸려있으면 화면이 영원히 "불러오는 중…"으로 남는다 — 원인을 못 찾아도
+     사용자가 무한정 기다리지 않도록 일정 시간 뒤엔 강제로 실패 처리한다.
+     주의: 실제 네트워크 요청 자체를 취소하지는 않는다(그냥 기다리길 포기함). */
+  function withTimeout(promise, ms, message) {
+    var timeoutId;
+    var timeout = new Promise(function (_, reject) {
+      timeoutId = setTimeout(function () {
+        reject(new Error(message || '요청이 너무 오래 걸립니다.'));
+      }, ms);
+    });
+    return Promise.race([promise, timeout]).then(
+      function (v) { clearTimeout(timeoutId); return v; },
+      function (e) { clearTimeout(timeoutId); throw e; }
+    );
+  }
+
   /* 로그인한 사용자가 담은 가게 + 각 가게의 방문 기록을 함께 가져온다.
      saved_restaurants가 Restaurant, visits가 그 위에 쌓이는 방문 기록이다
      (§4.2 원칙대로 visit_count/total_spent는 저장하지 않고 여기서 조립만 함).
      user_id로 따로 걸러 달라고 하지 않는다 — RLS(select_own_saved_restaurants)가
      이미 "내 행만" 돌려주므로 전체를 요청해도 결과는 내 것뿐이다.
-     cardlist.js/rank.js가 공통으로 쓰므로 여기 하나로 모아둔다. */
+     cardlist.js/rank.js/home.js가 공통으로 쓰므로 여기 하나로 모아둔다.
+     10초 안에 안 끝나면 포기하고 실패 처리(위 withTimeout) — 호출부가
+     "불러오지 못했습니다" 안내로 자연스럽게 넘어가게 만든다. */
   function fetchMyRestaurants(supabase) {
-    return supabase
+    var query = supabase
       .from('saved_restaurants')
       .select('id,name,grade,address,category,visits(id,visited_at,amount,split_count,memo)')
       .order('created_at', { ascending: true })
@@ -122,6 +141,7 @@
         if (res.error) return Promise.reject(res.error);
         return res.data || [];
       });
+    return withTimeout(query, 10000, '불러오기가 너무 오래 걸립니다.');
   }
 
   window.NaToGam.utils = {
@@ -138,6 +158,7 @@
     formatVisits: formatVisits,
     escapeHtml: escapeHtml,
     simplifyCategory: simplifyCategory,
+    withTimeout: withTimeout,
     fetchMyRestaurants: fetchMyRestaurants
   };
 })();
