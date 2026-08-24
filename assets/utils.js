@@ -87,6 +87,17 @@
     return n + '회';
   }
 
+  /* 카카오 category_name은 "음식점 > 양식 > 이탈리안"처럼 대분류 경로
+     문자열이다. 맞춤 추천이 비교할 saved_places.category는 "양식"·"카페"
+     같은 단순 라벨이라 그대로는 거의 매칭이 안 된다 — 경로의 두 번째
+     조각(대개 "음식점"/"카페" 다음)을 단순 카테고리로 뽑아 맞춘다. */
+  function simplifyCategory(raw) {
+    if (!raw) return null;
+    var parts = String(raw).split('>').map(function (s) { return s.trim(); }).filter(Boolean);
+    if (parts.length === 0) return null;
+    return parts.length > 1 ? parts[1] : parts[0];
+  }
+
   function escapeHtml(s) {
     return String(s == null ? '' : s)
       .replace(/&/g, '&amp;')
@@ -126,6 +137,7 @@
     splitAmount: splitAmount,
     formatVisits: formatVisits,
     escapeHtml: escapeHtml,
+    simplifyCategory: simplifyCategory,
     fetchMyRestaurants: fetchMyRestaurants
   };
 })();

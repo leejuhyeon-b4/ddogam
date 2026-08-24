@@ -242,6 +242,28 @@ header{position:sticky;top:0;z-index:30;background:rgba(218,213,204,.9);
 .ld{font-size:15px;color:var(--ash)}
 .ld b{color:var(--ink);font-weight:600}
 
+/* ── 인기 랭킹 (홈) — 모두가 담은 걸 합친 top5, 로그인 불필요 ── */
+.popular-list{list-style:none;margin:0;padding:0}
+.popular-item{
+  display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:var(--md);align-items:center;
+  padding:var(--md) 0;border-top:1px solid rgba(42,39,36,.12);
+}
+.popular-list li:first-child{border-top:none}
+.popular-rank{font-size:15px;font-weight:700;color:var(--ash);text-align:center}
+.popular-list li:first-child .popular-rank{color:var(--bronze)}
+.popular-name{font-size:15px;font-weight:600;letter-spacing:-.01em}
+.popular-count{font-size:13px;color:var(--ash);white-space:nowrap}
+
+/* ── 맞춤 추천 (홈) — 로그인 후, 가장 자주 담는 카테고리 기준 ── */
+.recommend-list{list-style:none;margin:var(--md) 0 0;padding:0}
+.recommend-item{
+  display:flex;flex-direction:column;gap:2px;
+  padding:var(--md) 0;border-top:1px solid rgba(42,39,36,.12);
+}
+.recommend-list li:first-child{border-top:none}
+.recommend-item .rname{font-size:15px;font-weight:600;letter-spacing:-.01em}
+.recommend-item .raddr{font-size:13px;color:var(--ash)}
+
 /* ── 정원제 ── */
 .quota{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--xl);align-items:start;margin-top:var(--lg)}
 table{border-collapse:collapse;width:100%;font-size:14px}
