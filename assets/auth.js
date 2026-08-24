@@ -238,9 +238,44 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
       .then(function () { setBusy(false); }, function () { setBusy(false); });
   }
 
+  /* onAuthStateChange의 첫 콜백(INITIAL_SESSION)이 브라우저에 따라 아주 늦게
+     오거나 아예 안 오는 경우가 보고됐다(원인 불명 — 브라우저 내부의 세션
+     동기화 잠금 등으로 추정. 다른 탭에 갔다 오면 그제서야 뜨는 증상과 일치).
+     이벤트만 기다리지 않고, 페이지가 열리자마자 getSession()으로 직접 한 번
+     더 물어본다. 5초 안에도 답이 없으면 일단 "모름(비로그인 취급)"으로
+     구독자들에게 알려 무한정 기다리게 하지 않는다 — 실제로 로그인 상태였다면
+     이후 onAuthStateChange가 응답을 들고 왔을 때 다시 정확히 바로잡는다. */
+  function withTimeout(promise, ms) {
+    return new Promise(function (resolve) {
+      var done = false;
+      var timer = window.setTimeout(function () {
+        if (done) return;
+        done = true;
+        resolve(null);
+      }, ms);
+      promise.then(function (v) {
+        if (done) return;
+        done = true;
+        window.clearTimeout(timer);
+        resolve(v);
+      }, function () {
+        if (done) return;
+        done = true;
+        window.clearTimeout(timer);
+        resolve(null);
+      });
+    });
+  }
+
+  withTimeout(supabase.auth.getSession(), 5000).then(function (res) {
+    var session = res && res.data && res.data.session;
+    currentUser = (session && session.user) || null;
+    renderAuthArea();
+    notifyListeners();
+  });
+
   /* ── 세션 추적 ──
-     onAuthStateChange가 구독 즉시 현재 세션으로 한 번 불려서(INITIAL_SESSION)
-     새로고침 직후에도 로그인 상태가 그대로 복원된다. */
+     이후의 실제 로그인/로그아웃/토큰 갱신은 계속 이 이벤트로 받는다. */
   supabase.auth.onAuthStateChange(function (_event, session) {
     currentUser = (session && session.user) || null;
     renderAuthArea();
