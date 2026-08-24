@@ -327,6 +327,18 @@ a.brand{text-decoration:none;color:inherit}
   .actions .btn-brass,.actions .btn-ghost{flex:1 1 auto;justify-content:center}
   .bar{flex-wrap:wrap;gap:var(--sm) var(--md)}
   .nav{gap:var(--md)}
+
+  .board{padding:var(--md)}
+  .board-zone{padding:var(--md) var(--sm) var(--sm)}
+  .zone-s .board-grid,.zone-a .board-grid,.zone-b .board-grid,.zone-c .board-grid{
+    grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+  }
+
+  .rank-podium{gap:6px}
+  .rank-avatar{width:52px;height:52px;font-size:16px}
+  .rank-podium-item.p1 .rank-avatar{width:60px;height:60px;font-size:18px}
+  .rank-name{font-size:13px}
+  .rank-amount{font-size:13px}
 }
 
 /* ── 좁은 폰 (≤400px) ──
@@ -344,6 +356,20 @@ a.brand{text-decoration:none;color:inherit}
   .ladder li{grid-template-columns:1fr;gap:2px;padding:10px 0}
   .ld{font-size:14px}
   .btn-brass{width:100%;justify-content:center}
+
+  .zone-s .board-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .zone-a .board-grid{grid-template-columns:repeat(auto-fill,minmax(145px,1fr))}
+  .zone-b .board-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+  .zone-c .board-grid{grid-template-columns:repeat(auto-fill,minmax(135px,1fr))}
+  .c5-name .cname{font-size:11px}
+  .c5-grade-name{font-size:12px}
+  .c5-visits b,.c5-spent b{font-size:13px}
+  .c5-visits .st-k,.c5-spent .st-k{font-size:8px}
+
+  .rank-row{grid-template-columns:22px 32px minmax(0,1fr) auto;gap:var(--sm)}
+  .rank-avatar-sm{width:30px;height:30px;font-size:11px}
+  .rank-row-name .rank-name{font-size:13px}
+  .rank-amount{font-size:12px}
 }
 
 /* ── 큰 화면 ── */
@@ -387,17 +413,29 @@ a.brand{text-decoration:none;color:inherit}
 
 /* ── 결과 목록 ── */
 .result-list{list-style:none;margin:0;padding:0}
+.result-li{display:flex;align-items:center;gap:var(--sm);border-top:1px solid rgba(42,39,36,.12)}
+.result-list li:first-child .result-li{border-top:none}
 .result-item{
-  display:flex;flex-direction:column;gap:2px;width:100%;
+  display:flex;flex-direction:column;gap:2px;flex:1 1 auto;min-width:0;
   text-align:left;font:inherit;color:inherit;background:none;
-  border:none;border-top:1px solid rgba(42,39,36,.12);
-  padding:var(--md) 0;cursor:pointer;
+  border:none;padding:var(--md) 0;cursor:pointer;
 }
-.result-item:first-child{border-top:none}
 .result-item:hover{background:rgba(42,39,36,.04)}
 .result-item[aria-expanded="true"]{background:rgba(168,135,78,.10)}
 .result-item .rname{font-size:15px;font-weight:600;letter-spacing:-.01em}
 .result-item .raddr{font-size:13px;color:var(--ash)}
+
+/* ── 담기 버튼 ── */
+.save-btn{
+  flex:none;align-self:center;
+  font:inherit;font-size:13px;font-weight:600;letter-spacing:-.01em;
+  border:1px solid rgba(42,39,36,.28);border-radius:999px;
+  padding:7px 16px;background:none;color:var(--ink);cursor:pointer;white-space:nowrap;
+}
+.save-btn:hover{border-color:var(--ink)}
+.save-btn:focus-visible{outline:2px solid var(--bronze);outline-offset:2px}
+.save-btn:disabled{opacity:.5;cursor:not-allowed}
+.save-btn--saved{border-color:var(--brass);background:var(--brass);color:#FFFFFF}
 
 /* ── 리뷰 패널 ── */
 .review-panel{
@@ -518,8 +556,142 @@ a.brand{text-decoration:none;color:inherit}
    카드 목록 페이지 — 로그인 상태별 표시
    ═══════════════════════════════════════════════ */
 .cardlist-login{margin-top:var(--lg)}
-.cardlist-groups{margin-top:var(--lg)}
-.cardlist-group{padding:var(--lg) 0;border-bottom:1px solid rgba(42,39,36,.12)}
-.cardlist-group:first-child{padding-top:0}
-.cardlist-group:last-child{border-bottom:none}
-.cardlist-group h3{margin-bottom:var(--xs)}
+
+/* ═══════════════════════════════════════════════
+   카드 도감(판) — ref/board.jpg의 "라벨 붙은 구역 +
+   카드 슬롯 윤곽" 구조를 무채색 톤으로 재해석.
+   등급 구역을 S→A→B→C 순으로 위→아래 배치한다.
+   구역 간 위계는 카드 크기로만 두고, 색·재질로는 두지 않는다 —
+   등급은 오직 구역 라벨 글자(인생맛집/맛집/무난/비추)로만 구별된다.
+   ═══════════════════════════════════════════════ */
+.board{
+  margin-top:var(--lg);background:var(--limestone);
+  border:1px solid rgba(42,39,36,.14);border-radius:8px;padding:var(--lg);
+  box-shadow:inset 0 1px 3px rgba(42,39,36,.12),0 1px 0 rgba(255,255,255,.4);
+}
+.board-zone{
+  position:relative;margin-bottom:var(--xl);
+  padding:var(--lg) var(--md) var(--md);
+  border:1px dashed rgba(42,39,36,.20);border-radius:6px;
+}
+.board-zone:last-child{margin-bottom:0}
+.board-zone-label{
+  position:absolute;top:-11px;left:var(--md);background:var(--limestone);
+  padding:0 8px;font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--ash);
+  margin:0;
+}
+.board-zone-count{
+  position:absolute;top:-11px;right:var(--md);background:var(--limestone);
+  padding:0 8px;font-size:11px;color:var(--ash);
+}
+.board-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:var(--md)}
+.board-slot-empty{
+  aspect-ratio:3/4;border:1px dashed rgba(42,39,36,.22);border-radius:var(--radius);
+  display:grid;place-items:center;font-size:11px;color:var(--ash);
+  text-align:center;padding:var(--sm);
+}
+@supports not (aspect-ratio:3/4){
+  .board-slot-empty{height:0;padding-bottom:133.333%;position:relative}
+  .board-slot-empty span{position:absolute;inset:0;display:grid;place-items:center;padding:var(--sm)}
+}
+
+/* 등급 구역 4개는 전부 같은 톤이다 — 구역 간 위계는 크기로만 두고
+   색으로는 두지 않는다(등급별 색·재질 구분 없음). */
+.zone-s .board-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.zone-a .board-grid{grid-template-columns:repeat(auto-fill,minmax(165px,1fr))}
+.zone-b .board-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.zone-c .board-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+
+/* ═══════════════════════════════════════════════
+   카드 — 5분할 (ref/card.jpg 참고)
+   왼쪽위 식당명 · 오른쪽위 이미지(빈 칸) ·
+   가운데 길게 등급 · 왼쪽아래 방문횟수 · 오른쪽아래 누적금액(n분의1 반영)
+   좌우 상/하단 4칸은 거의 정사각형, 가운데 등급 칸은 가로로 긴 띠.
+   등급별 재질·색상 구분 없음 — 카드는 전부 같은 무채색 톤이다. */
+.card5{
+  aspect-ratio:3/4;border-radius:var(--radius);
+  background:#FAF8F5;
+  border:1px solid rgba(42,39,36,.14);
+  box-shadow:0 2px 6px rgba(42,39,36,.10);
+  padding:9px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:3fr 2fr 3fr;
+  grid-template-areas:"name image" "grade grade" "visits spent";
+  gap:6px;
+}
+@supports not (aspect-ratio:3/4){
+  .card5{height:0;padding-bottom:133.333%;position:relative}
+}
+
+.c5-name{grid-area:name;min-width:0;display:flex;align-items:flex-start}
+.c5-name .cname{font-size:13px}
+
+.c5-grade{grid-area:grade;display:flex;align-items:center;justify-content:center;text-align:center;
+  border-top:1px solid rgba(42,39,36,.16);border-bottom:1px solid rgba(42,39,36,.16)}
+.c5-grade-name{font-size:15px;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
+
+.c5-visits,.c5-spent{grid-area:visits;display:flex;flex-direction:column;justify-content:flex-end}
+.c5-spent{grid-area:spent;text-align:right;align-items:flex-end}
+.c5-visits .st-k,.c5-spent .st-k{display:block;font-size:9px;font-weight:500;letter-spacing:.1em;color:var(--ash);margin-bottom:1px}
+.c5-visits b,.c5-spent b{font-size:16px;font-weight:700;letter-spacing:-.01em}
+.c5-visits i,.c5-spent i{font-style:normal;font-size:10px;font-weight:500;color:var(--ash);margin-left:1px}
+
+/* 이미지 칸 — 지금은 비워둔다. 점선 빈 슬롯으로 "채울 자리"임을 드러낸다 */
+.c5-image{
+  grid-area:image;border:1px dashed rgba(42,39,36,.25);border-radius:2px;
+  background:rgba(42,39,36,.03);
+}
+
+/* ═══════════════════════════════════════════════
+   랭킹 페이지 — ref/rank.jpg의 "포디움 + 순번 리스트" 구조를
+   무채색 톤으로 재해석. 등급별 색·재질 구분은 없다 —
+   등급은 pill 배지의 글자(인생맛집/맛집/무난/비추)로만 표시된다.
+   등수 색은 순위 정보이지 등급 정보가 아니다 — 1위만 크기·상승·
+   브론즈 링으로 구분(이 화면의 유일한 브론즈 강조).
+   사진이 없으므로 아바타는 무채색 원 위에 식당명 첫 글자를 얹는다.
+   ═══════════════════════════════════════════════ */
+.rank-podium{display:flex;align-items:flex-end;gap:var(--sm);margin-top:var(--lg);margin-bottom:var(--xl)}
+.rank-podium-item{
+  position:relative;flex:1;min-width:0;background:#FAF8F5;border-radius:var(--radius);
+  padding:var(--md);text-align:center;box-shadow:0 4px 10px rgba(42,39,36,.14);
+}
+.rank-podium-item.p1{
+  padding-top:calc(var(--md) + 10px);transform:translateY(-14px);
+  box-shadow:0 10px 22px rgba(42,39,36,.20);
+}
+.rank-no{
+  position:absolute;top:-8px;left:-8px;width:24px;height:24px;border-radius:50%;
+  background:var(--limestone);display:grid;place-items:center;font-size:12px;font-weight:700;
+}
+.rank-podium-item.p1 .rank-no{border:2px solid var(--bronze);color:var(--bronze)}
+.rank-podium-item.p2 .rank-no,.rank-podium-item.p3 .rank-no{border:2px solid var(--ash);color:var(--ash)}
+
+.rank-avatar{
+  width:64px;height:64px;border-radius:50%;margin:0 auto var(--sm);
+  display:grid;place-items:center;font-size:20px;font-weight:700;color:var(--ink);
+  background:rgba(42,39,36,.06);
+  box-shadow:inset 0 0 0 1px rgba(42,39,36,.12);
+}
+.rank-podium-item.p1 .rank-avatar{width:76px;height:76px;font-size:24px}
+
+.rank-name{font-size:15px;font-weight:600;letter-spacing:-.01em;
+  display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.rank-amount{display:block;margin-top:2px;font-size:15px;font-weight:700;letter-spacing:-.01em}
+.rank-pill{
+  display:inline-block;margin-top:4px;padding:2px 10px;border-radius:999px;
+  background:rgba(42,39,36,.06);font-size:12px;font-weight:600;color:var(--ash);
+}
+
+.rank-list{list-style:none;margin:0;padding:0}
+.rank-row{
+  display:grid;grid-template-columns:28px 40px minmax(0,1fr) auto;gap:var(--md);align-items:center;
+  padding:var(--sm) 0;border-top:1px solid rgba(42,39,36,.12);
+}
+.rank-list li:first-child .rank-row{border-top:none}
+.rank-idx{font-size:14px;font-weight:600;color:var(--ash);text-align:center}
+.rank-avatar-sm{width:36px;height:36px;font-size:13px;margin:0}
+.rank-row-name{min-width:0}
+.rank-row-name .rank-name{font-size:14px}
+.rank-sub{display:block;font-size:11px;color:var(--ash);margin-top:2px}
+.rank-row .rank-amount{text-align:right;white-space:nowrap}

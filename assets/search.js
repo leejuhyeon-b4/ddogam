@@ -24,10 +24,17 @@
   function renderResults(list) {
     results = list;
     var html = list.map(function (place, idx) {
-      return '<li><button type="button" class="result-item" aria-expanded="false" data-idx="' + idx + '">' +
-        '<span class="rname">' + escapeHtml(place.name) + '</span>' +
-        '<span class="raddr">' + escapeHtml(place.address) + '</span>' +
-        '</button></li>';
+      var saved = window.NaToGam.save && window.NaToGam.save.isSaved(place.id);
+      return '<li class="result-li">' +
+        '<button type="button" class="result-item" aria-expanded="false" data-idx="' + idx + '">' +
+          '<span class="rname">' + escapeHtml(place.name) + '</span>' +
+          '<span class="raddr">' + escapeHtml(place.address) + '</span>' +
+        '</button>' +
+        '<button type="button" class="save-btn' + (saved ? ' save-btn--saved' : '') + '" ' +
+          'data-save-idx="' + idx + '" aria-pressed="' + (saved ? 'true' : 'false') + '">' +
+          (saved ? '담김' : '담기') +
+        '</button>' +
+      '</li>';
     }).join('');
     resultList.innerHTML = html;
     resultList.hidden = false;
@@ -309,6 +316,39 @@
     if (place) openReviewPanel(place);
   }
 
+  /* ── 담기 버튼 클릭 위임 ── */
+  function onSaveBtnClick(e) {
+    var btn = e.target.closest ? e.target.closest('.save-btn') : null;
+    if (!btn || !resultList.contains(btn)) return;
+
+    var idx = Number(btn.dataset.saveIdx);
+    var place = results[idx];
+    if (!place) return;
+
+    var auth = window.NaToGam.auth;
+    var loggedIn = auth && auth.requireLogin(function () {
+      alert('로그인하면 담을 수 있어요');
+    });
+    if (!loggedIn) return; // requireLogin이 이미 안내 + 로그인 모달을 처리함
+
+    btn.disabled = true;
+    window.NaToGam.save.toggle(place).then(function (result) {
+      btn.disabled = false;
+      if (result.status === 'saved') {
+        btn.classList.add('save-btn--saved');
+        btn.setAttribute('aria-pressed', 'true');
+        btn.textContent = '담김';
+      } else if (result.status === 'unsaved') {
+        btn.classList.remove('save-btn--saved');
+        btn.setAttribute('aria-pressed', 'false');
+        btn.textContent = '담기';
+      } else {
+        console.error('맛집 담기 처리 실패:', place.name);
+      }
+      // 'error'면 버튼 상태를 그대로 두고 콘솔에만 로그가 남음
+    });
+  }
+
   /* ── 리뷰 패널 클릭 위임(닫기 버튼) ── */
   function onReviewPanelClick(e) {
     var btn = e.target.closest ? e.target.closest('#reviewCloseBtn') : null;
@@ -326,6 +366,7 @@
     reviewPanel = $('reviewPanel');
 
     resultList.addEventListener('click', onResultListClick);
+    resultList.addEventListener('click', onSaveBtnClick);
     reviewPanel.addEventListener('click', onReviewPanelClick);
 
     searchForm.addEventListener('submit', function (e) {
