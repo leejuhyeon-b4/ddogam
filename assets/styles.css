@@ -393,8 +393,8 @@ a.brand{text-decoration:none;color:inherit}
   .zone-c .board-grid{grid-template-columns:repeat(auto-fill,minmax(135px,1fr))}
   .c5-name .cname{font-size:11px}
   .c5-grade-name{font-size:12px}
-  .c5-visits b,.c5-spent b{font-size:13px}
-  .c5-visits .st-k,.c5-spent .st-k{font-size:8px}
+  .c5-stats .st-v{font-size:16px}
+  .c5-stats .st-k{font-size:8px}
 
   .rank-row{grid-template-columns:22px 32px minmax(0,1fr) auto;gap:var(--sm)}
   .rank-avatar-sm{width:30px;height:30px;font-size:11px}
@@ -643,31 +643,42 @@ a.brand{text-decoration:none;color:inherit}
 .zone-u .board-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
 
 /* ═══════════════════════════════════════════════
-   카드 — 5분할 (ref/card.jpg 참고)
-   왼쪽위 식당명 · 오른쪽위 이미지(빈 칸) ·
-   가운데 길게 등급 · 왼쪽아래 방문횟수 · 오른쪽아래 누적금액(n분의1 반영)
-   좌우 상/하단 4칸은 거의 정사각형, 가운데 등급 칸은 가로로 긴 띠.
-   등급별 재질·색상 구분 없음 — 카드는 전부 같은 무채색 톤이다. */
+   카드 — 5분할 (ref/card.jpg 참고), 등급별 배틀카드 팔레트.
+   왼쪽위 식당명 · 오른쪽위 이미지(등급별 돼지 캐릭터) ·
+   가운데 길게 등급 · 아래 방문·누적을 능력치처럼 중앙에 크게.
+   프레임·페이스·배지 색이 등급마다 통째로 바뀐다(§등급 팔레트 참고).
+   인생맛집만 오로라+홀로+크리스탈 글레어 효과가 얹힌다. */
 .card5{
   position:relative;
-  aspect-ratio:3/4;border-radius:var(--radius);
-  background:#FAF8F5;
-  border:1px solid rgba(42,39,36,.14);
-  box-shadow:0 2px 6px rgba(42,39,36,.10);
-  padding:9px;
+  aspect-ratio:3/4;border-radius:10px;
+  background:linear-gradient(165deg,var(--face1) 0%,var(--face2) 100%);
+  border:3px solid var(--frame);
+  color:var(--text);
+  box-shadow:0 6px 14px rgba(42,39,36,.18),inset 0 0 0 1px rgba(255,255,255,.55);
+  padding:8px;
   display:grid;
+  isolation:isolate;
+  overflow:hidden;
   grid-template-columns:1fr 1fr;
-  grid-template-rows:3fr 2fr 3fr;
-  grid-template-areas:"name image" "grade grade" "visits spent";
-  gap:6px;
+  grid-template-rows:2.8fr 1.3fr 3.4fr;
+  grid-template-areas:"name image" "grade grade" "stats stats";
+  gap:4px;
   transition:transform 120ms ease-out,box-shadow 120ms ease-out;
 }
-.card5:hover{box-shadow:0 4px 10px rgba(42,39,36,.16);transform:translateY(-1px)}
+.card5:hover{box-shadow:0 9px 18px rgba(42,39,36,.24),inset 0 0 0 1px rgba(255,255,255,.55);transform:translateY(-2px)}
 .card5:focus-within{outline:2px solid var(--bronze);outline-offset:2px}
 @media (hover:none){ .card5:hover{transform:none} }
 @supports not (aspect-ratio:3/4){
   .card5{height:0;padding-bottom:133.333%}
 }
+
+/* ── 등급 팔레트 — 재질 대신 색으로 등급을 표현한다(§DESIGN 재질 규칙 폐기, 배틀카드 방향으로 변경) ── */
+.card5.g-s{ --frame:#C99A3D; --face1:#FFFCF3; --face2:#F6DFA0; --band:#8B6B1F; --on-band:#FFF6E0; --text:var(--ink); }
+.card5.g-a{ --frame:#5E9E4C; --face1:#F3FBEE; --face2:#C7E8B4; --band:#2F5F27; --on-band:#EAFBE3; --text:var(--ink); }
+.card5.g-b{ --frame:#4B8FC4; --face1:#EFF7FD; --face2:#B9DCF3; --band:#245A83; --on-band:#E7F4FC; --text:var(--ink); }
+.card5.g-c{ --frame:#8A61B0; --face1:#F7F0FA; --face2:#DAC2E8; --band:#4E3170; --on-band:#F3E9F8; --text:var(--ink); }
+.card5.g-u{ --frame:transparent; --face1:#D8D3CA; --face2:#D8D3CA; --band:transparent; --on-band:var(--ash); --text:var(--ink);
+  border:2px dashed rgba(42,39,36,.28);box-shadow:none;background:var(--limestone) }
 
 /* 카드 전체를 덮는 투명 버튼(관리 열기) 위에, 우상단 × 버튼(삭제)을 따로
    쌓는다 — button 안에 button을 넣을 수 없어 형제로 겹쳐서 처리한다. */
@@ -686,24 +697,95 @@ a.brand{text-decoration:none;color:inherit}
 .card5-del:hover{color:var(--ink);border-color:var(--ink);background:#FFFFFF}
 .card5-del:focus-visible{outline:2px solid var(--bronze);outline-offset:1px}
 
-.c5-name{grid-area:name;min-width:0;display:flex;align-items:flex-start}
-.c5-name .cname{font-size:13px}
+.c5-name{grid-area:name;min-width:0;display:flex;align-items:flex-start;position:relative;z-index:1}
+.c5-name .cname{font-size:12.5px;color:inherit}
 
-.c5-grade{grid-area:grade;display:flex;align-items:center;justify-content:center;text-align:center;
-  border-top:1px solid rgba(42,39,36,.16);border-bottom:1px solid rgba(42,39,36,.16)}
-.c5-grade-name{font-size:15px;font-weight:700;letter-spacing:-.01em;color:var(--ink)}
+.c5-grade{grid-area:grade;display:flex;align-items:center;justify-content:center;text-align:center;position:relative;z-index:1;
+  background:var(--band);border-radius:3px;margin:0 -1px}
+.g-u .c5-grade{background:none}
+.c5-grade-name{font-size:11.5px;font-weight:700;letter-spacing:.02em;color:var(--on-band)}
+.g-u .c5-grade-name{color:var(--ash)}
+.c5-grade-name::before,.c5-grade-name::after{content:"";display:inline-block;width:3.5px;height:3.5px;background:currentColor;
+  transform:rotate(45deg);margin:0 5px;vertical-align:middle;opacity:.65}
+.g-u .c5-grade-name::before,.g-u .c5-grade-name::after{display:none}
 
-.c5-visits,.c5-spent{grid-area:visits;display:flex;flex-direction:column;justify-content:flex-end}
-.c5-spent{grid-area:spent;text-align:right;align-items:flex-end}
-.c5-visits .st-k,.c5-spent .st-k{display:block;font-size:9px;font-weight:500;letter-spacing:.1em;color:var(--ash);margin-bottom:1px}
-.c5-visits b,.c5-spent b{font-size:16px;font-weight:700;letter-spacing:-.01em}
-.c5-visits i,.c5-spent i{font-style:normal;font-size:10px;font-weight:500;color:var(--ash);margin-left:1px}
+/* ── 능력치 스탯 바 — 방문·누적을 게임카드 능력치처럼 하단 중앙에 크게 ── */
+.c5-stats{grid-area:stats;position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:10px;height:100%}
+.c5-stats .stat{display:flex;flex-direction:column;align-items:center;min-width:0}
+.c5-stats .st-k{display:block;font-size:8.5px;font-weight:700;letter-spacing:.14em;color:currentColor;opacity:.62;margin-bottom:2px}
+.c5-stats .st-v{font-size:19px;font-weight:800;letter-spacing:-.02em;line-height:1;white-space:nowrap}
+.c5-stats .st-v i{font-style:normal;font-size:10px;font-weight:600;opacity:.68;margin-left:2px}
+.stat-div{width:1px;align-self:stretch;margin:6px 0;background:currentColor;opacity:.2}
 
-/* 이미지 칸 — 지금은 비워둔다. 점선 빈 슬롯으로 "채울 자리"임을 드러낸다 */
+/* 이미지 칸 — 등급별 돼지 캐릭터. 배경을 따로 두지 않아 카드 색이 그대로 비친다 */
 .c5-image{
-  grid-area:image;border:1px dashed rgba(42,39,36,.25);border-radius:2px;
-  background:rgba(42,39,36,.03);
+  grid-area:image;position:relative;z-index:1;
+  display:flex;align-items:center;justify-content:center;
 }
+.c5-image img{width:100%;height:100%;object-fit:contain;object-position:center bottom;display:block}
+
+/* ═══════════════════════════════════════════════
+   인생맛집 — 카드 색 자체는 다른 등급과 같은 방식(골드 톤)이고,
+   차이는 오직 이 효과뿐: 오로라 빛깔이 은은히 번지고(soft-light),
+   그 위로 프리즘 시트가 흐르고(soft-light), 크리스탈 결면이
+   주기적으로 반짝인다. 화면당 황동 규칙과 별개의 광물성 강조라
+   브론즈 예산을 소모하지 않는다.
+   ═══════════════════════════════════════════════ */
+.card5.g-s::before{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;border-radius:7px;
+  background:
+    radial-gradient(ellipse 75% 45% at 25% 15%,#4CFFC466 0%,transparent 62%),
+    radial-gradient(ellipse 65% 40% at 78% 10%,#39D8E058 0%,transparent 60%),
+    radial-gradient(ellipse 70% 50% at 45% 60%,#B487FF52 0%,transparent 65%),
+    radial-gradient(ellipse 60% 34% at 82% 75%,#FF7FD452 0%,transparent 60%);
+  mix-blend-mode:soft-light; opacity:.9;
+  animation:card5-aurora-drift 13s ease-in-out infinite alternate;
+}
+.card5.g-s::after{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;border-radius:7px;
+  background:repeating-linear-gradient(
+    115deg,
+    #ffffff00 0px,#9fd8ffa0 10px,#b9ffe6a0 22px,#e3c8ffa0 34px,
+    #ffc2e6a0 46px,#fff2b0a0 58px,#ffffff00 74px
+  );
+  background-size:280% 280%;
+  mix-blend-mode:soft-light; opacity:.85;
+  animation:card5-holo-drift 8s ease-in-out infinite;
+}
+@keyframes card5-aurora-drift{0%{transform:translateY(0) scale(1)}100%{transform:translateY(-5%) scale(1.05)}}
+@keyframes card5-holo-drift{
+  0%{background-position:0% 30%}
+  50%{background-position:100% 70%}
+  100%{background-position:0% 30%}
+}
+
+/* 크리스탈 반사 — 결정면 잔선(고정) + 빛이 훑고 지나가는 글레어(주기 이동) */
+.crystal-glare{
+  position:absolute;inset:0;z-index:0;pointer-events:none;border-radius:inherit;
+  background:
+    repeating-linear-gradient(65deg,transparent 0 16px,rgba(255,255,255,.12) 16px 17px,transparent 17px 34px,rgba(255,255,255,.07) 34px 35px),
+    linear-gradient(70deg,transparent 22%,rgba(255,255,255,.9) 46%,transparent 64%);
+  background-size:100% 100%,55% 240%;
+  background-position:0 0,-70% -70%;
+  background-repeat:no-repeat;
+  mix-blend-mode:screen;
+  animation:card5-crystal-sweep 5s ease-in-out infinite;
+}
+@keyframes card5-crystal-sweep{
+  0%,15%{background-position:0 0,-70% -70%}
+  55%,70%{background-position:0 0,170% 170%}
+  100%{background-position:0 0,170% 170%}
+}
+@media (prefers-reduced-motion:reduce){
+  .card5.g-s::before,.card5.g-s::after,.crystal-glare{animation:none}
+  .card5.g-s::after{background-position:35% 40%}
+  .crystal-glare{background-position:0 0,40% 40%}
+}
+
+.zone-s .board-zone-label{color:#8B6B1F}
+.zone-a .board-zone-label{color:#2F5F27}
+.zone-b .board-zone-label{color:#245A83}
+.zone-c .board-zone-label{color:#4E3170}
 
 /* ═══════════════════════════════════════════════
    랭킹 페이지 — ref/rank.jpg의 "포디움 + 순번 리스트" 구조를

@@ -51,23 +51,38 @@
       '</div>';
   }
 
+  /* 등급별 돼지 캐릭터 — 오른쪽 상단 이미지 칸. 미지정은 그림 없이 빈 칸 */
+  var GRADE_PIG_IMG = {
+    S: 'assets/img/pig-s.png',
+    A: 'assets/img/pig-a.png',
+    B: 'assets/img/pig-b.png',
+    C: 'assets/img/pig-c.png'
+  };
+
   /* ── 카드 한 장 — 5분할. 카드 전체는 관리 모달을 열고,
      우상단 × 버튼만 따로 삭제한다(버튼 안에 버튼을 넣을 수 없어 두 버튼을
-     같은 칸에 겹쳐 쌓는다 — .card5-open이 전체를 덮고 .card5-del이 그 위). ── */
+     같은 칸에 겹쳐 쌓는다 — .card5-open이 전체를 덮고 .card5-del이 그 위).
+     등급마다 카드 색(프레임/페이스/배지)이 통째로 바뀌고, 인생맛집(S)만
+     오로라·홀로·크리스탈 글레어 효과(.crystal-glare)가 얹힌다. */
   function card5HTML(restaurant) {
     var meta = utils.gradeMeta(restaurant.grade);
     var visits = utils.visitCount(restaurant);
     var spentMan = Math.round(utils.totalSpent(restaurant) / 10000).toLocaleString('ko-KR');
     var name = utils.escapeHtml(restaurant.name);
+    var pigSrc = GRADE_PIG_IMG[restaurant.grade];
 
-    return '<div class="card5" data-id="' + restaurant.id + '">' +
+    return '<div class="card5 ' + meta.cls + '" data-id="' + restaurant.id + '">' +
+        (restaurant.grade === 'S' ? '<span class="crystal-glare" aria-hidden="true"></span>' : '') +
         '<button type="button" class="card5-open" data-id="' + restaurant.id + '" aria-label="' + name + ' 관리"></button>' +
         '<button type="button" class="card5-del" data-id="' + restaurant.id + '" aria-label="' + name + ' 목록에서 삭제">✕</button>' +
         '<span class="c5-name"><span class="cname">' + name + '</span></span>' +
-        '<span class="c5-image" aria-hidden="true"></span>' +
+        '<span class="c5-image" aria-hidden="true">' + (pigSrc ? '<img src="' + pigSrc + '" alt="">' : '') + '</span>' +
         '<span class="c5-grade"><span class="c5-grade-name">' + meta.name + '</span></span>' +
-        '<span class="c5-visits"><span class="st-k">방문</span><b>' + visits + '</b><i>회</i></span>' +
-        '<span class="c5-spent"><span class="st-k">누적</span><b>' + spentMan + '</b><i>만원</i></span>' +
+        '<span class="c5-stats">' +
+          '<span class="stat"><span class="st-k">방문</span><span class="st-v">' + visits + '<i>회</i></span></span>' +
+          '<span class="stat-div"></span>' +
+          '<span class="stat"><span class="st-k">누적</span><span class="st-v">' + spentMan + '<i>만원</i></span></span>' +
+        '</span>' +
       '</div>';
   }
 
